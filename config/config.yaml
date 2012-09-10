@@ -1,0 +1,40 @@
+---
+# The account that Jently will use for communicating with GitHub.
+:github_login: github_login
+:github_password: github_password
+
+# The repository that contains the pull requests you want to run tests on.
+# For example, if you wanted to test the pull requests of the Jently repository,
+# you would put git@github.com:vaneyckt/Jently.git here.
+:github_ssh_repository: git@github.com:vaneyckt/Jently.git
+
+# The interval between successive communications with GitHub.
+# This makes sure we don't end up spamming GitHub's servers.
+:github_polling_interval_seconds: 60
+
+# If access to your Jenkins CI is restricted with a login and password,
+# you can enther these here. Otherwise you can delete these lines or leave
+# them untouched. Either way will work.
+:jenkins_login: jenkins_login
+:jenkins_password: jenkins_password
+
+# The url that your Jenkins CI can be found at.
+:jenkins_url: jenkins_url
+
+# The Jenkins build job for testing that you set up in step 2 of the installation
+# guide at https://github.com/vaneyckt/Jently/blob/master/README.rdoc.
+:jenkins_job_name: test_job
+
+# The amount of time Jently will wait for a test job to complete before marking it
+# as timed out. A good number for this is twice the amount of time that the test job
+# should take on average.
+:jenkins_job_timeout_seconds: 1800
+
+# The interval between successive polling requests that Jently makes to Jenkins in
+# order to query the state of the test job.
+:jenkins_polling_interval_seconds: 60
+
+# When Jently needs to test a pull request, it creates a special testing branch.
+# Here you can specify the name of this branch. You'll want to give it a name that
+# people are unlikely to use for their feature branches.
+:testing_branch_name: jently_pull_request_testing
