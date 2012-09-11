@@ -69,16 +69,22 @@ module PullRequestsData
 
   def PullRequestsData.is_test_required(pull_request)
     data = read
+    is_new = !data.has_key?(pull_request[:id])
+    is_merged = pull_request[:merged]
 
-    is_test_required = !data.has_key?(pull_request[:id])
-    is_test_required = is_test_required or pull_request[:status] == 'error'
-    is_test_required = is_test_required or pull_request[:status] == 'pending'
-    is_test_required = is_test_required or pull_request[:status] == 'undefined'
-    is_test_required = is_test_required or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]
-    is_test_required = is_test_required or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+    has_valid_status = false
+    has_valid_status = has_valid_status or pull_request[:status] == 'success'
+    has_valid_status = has_valid_status or pull_request[:status] == 'failure'
 
-    is_test_required = is_test_required and !pull_request[:merged]
-    is_test_required = is_test_required and pull_request[:status] != 'success'
-    is_test_required = is_test_required and pull_request[:status] != 'failure'
+    has_invalid_status = false
+    has_invalid_status = has_invalid_status or pull_request[:status] == 'error'
+    has_invalid_status = has_invalid_status or pull_request[:status] == 'pending'
+    has_invalid_status = has_invalid_status or pull_request[:status] == 'undefined'
+
+    was_updated = false
+    was_updated = was_updated or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]
+    was_updated = was_updated or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+
+    is_test_required = !is_merged and (is_new or has_invalid_status or (has_valid_status and was_updated))
   end
 end
