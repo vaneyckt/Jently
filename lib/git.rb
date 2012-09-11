@@ -10,6 +10,7 @@ module Git
       cd #{repository_dir} &&
       git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
     GIT
+    puts 'Cloning repository ...'
     status, stdout, stderr = systemu(cmd)
     Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
