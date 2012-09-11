@@ -69,12 +69,16 @@ module PullRequestsData
 
   def PullRequestsData.is_test_required(pull_request)
     data = read
+
     is_test_required = !data.has_key?(pull_request[:id])
-    is_test_required = pull_request[:status] == 'error' if !is_test_required
-    is_test_required = pull_request[:status] == 'pending' if !is_test_required
-    is_test_required = pull_request[:status] == 'undefined' if !is_test_required
-    is_test_required = data[pull_request[:id]][:head_sha] != pull_request[:head_sha] if !is_test_required
-    is_test_required = data[pull_request[:id]][:base_sha] != pull_request[:base_sha] if !is_test_required
+    is_test_required = is_test_required or pull_request[:status] == 'error'
+    is_test_required = is_test_required or pull_request[:status] == 'pending'
+    is_test_required = is_test_required or pull_request[:status] == 'undefined'
+    is_test_required = is_test_required or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]
+    is_test_required = is_test_required or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+
     is_test_required = is_test_required and !pull_request[:merged]
+    is_test_required = is_test_required and pull_request[:status] != 'success'
+    is_test_required = is_test_required and pull_request[:status] != 'failure'
   end
 end
