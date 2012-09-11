@@ -17,6 +17,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
+      git reset --hard &&
       git clean -df &&
       git checkout master &&
       git branch -D #{config[:testing_branch_name]}
@@ -29,6 +30,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
+      git reset --hard &&
       git clean -df &&
       git checkout master &&
       git push origin :#{config[:testing_branch_name]}
@@ -41,6 +43,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
+      git reset --hard &&
       git clean -df &&
       git checkout #{pull_request[:head_branch]} &&
       git fetch --all &&
@@ -57,6 +60,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
+      git reset --hard &&
       git clean -df &&
       git checkout #{config[:testing_branch_name]} &&
       git push origin #{config[:testing_branch_name]}
