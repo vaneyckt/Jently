@@ -12,7 +12,7 @@ module Git
     GIT
     puts 'Cloning repository ...'
     status, stdout, stderr = systemu(cmd)
-    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Cloning repository - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.delete_local_testing_branch
@@ -26,7 +26,7 @@ module Git
       git branch -D #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Deleting local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.delete_remote_testing_branch
@@ -40,7 +40,7 @@ module Git
       git push origin :#{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.create_local_testing_branch(pull_request)
@@ -58,7 +58,7 @@ module Git
       git pull origin #{pull_request[:base_branch]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.push_local_testing_branch_to_remote
@@ -72,6 +72,6 @@ module Git
       git push origin #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Pushing local testing branch to remote - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 end

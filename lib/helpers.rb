@@ -5,14 +5,10 @@ module Logger
     "#{Dir.pwd}/log"
   end
 
-  def Logger.log(message)
+  def Logger.log(message, exception = nil)
     path = get_path
-    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i}) - #{message} \n" }
-  end
-
-  def Logger.log(message, exception)
-    path = get_path
-    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i}) - #{message} - #{exception.backtrace} \n" }
+    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i})\n======================================\n#{message} \n\n" } if exception.nil?
+    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i})\n======================================\n#{message} - #{exception.backtrace} \n\n" } if !exception.nil?
   end
 end
 
