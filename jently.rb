@@ -45,8 +45,8 @@ while true
   open_pull_requests_ids.each do |pull_request_id|
     begin
       test_pull_request(pull_request_id)
-    rescue => e
-      Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => "Error: #{e.message}"})
+    rescue
+      Github.set_pull_request_status(pull_request_id, {:status => 'error'})
     end
   end
   sleep config[:github_polling_interval_seconds]
