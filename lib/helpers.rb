@@ -1,5 +1,21 @@
 require 'yaml'
 
+module Logger
+  def Logger.get_path
+    "#{Dir.pwd}/log"
+  end
+
+  def Logger.log(message)
+    path = get_path
+    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i}) - #{message} \n" }
+  end
+
+  def Logger.log(message, exception)
+    path = get_path
+    File.open(path, 'a') { |f| f << "#{Time.now} (#{Time.now.to_i}) - #{message} - #{exception.backtrace} \n" }
+  end
+end
+
 module ConfigFile
   def ConfigFile.get_path
     "#{Dir.pwd}/config/config.yaml"

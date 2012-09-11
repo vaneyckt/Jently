@@ -31,12 +31,13 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
+      Logger.log('Error when getting nb of idle executors', e)
       sleep 5
       retry
     end
   end
 
-  def Jenkins.start_jo
+  def Jenkins.start_job(job_id)
     begin
       config = ConfigFile.read
       connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
@@ -57,6 +58,7 @@ module Jenkins
       end
       job_id
     rescue => e
+      Logger.log('Error when starting job', e)
       sleep 5
       retry
     end
@@ -104,6 +106,7 @@ module Jenkins
       end
       state
     rescue => e
+      Logger.log('Error when getting job state', e)
       sleep 5
       retry
     end

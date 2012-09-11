@@ -1,3 +1,4 @@
+require 'systemu'
 require './lib/helpers.rb'
 
 module Git
@@ -9,7 +10,8 @@ module Git
       cd #{repository_dir} &&
       git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
     GIT
-    system(cmd)
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.delete_local_testing_branch
@@ -22,7 +24,8 @@ module Git
       git checkout master &&
       git branch -D #{config[:testing_branch_name]}
     GIT
-    system(cmd)
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.delete_remote_testing_branch
@@ -35,7 +38,8 @@ module Git
       git checkout master &&
       git push origin :#{config[:testing_branch_name]}
     GIT
-    system(cmd)
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.create_local_testing_branch(pull_request)
@@ -52,7 +56,8 @@ module Git
       git checkout -b #{config[:testing_branch_name]} &&
       git pull origin #{pull_request[:base_branch]}
     GIT
-    system(cmd)
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.push_local_testing_branch_to_remote
@@ -65,6 +70,7 @@ module Git
       git checkout #{config[:testing_branch_name]} &&
       git push origin #{config[:testing_branch_name]}
     GIT
-    system(cmd)
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 end

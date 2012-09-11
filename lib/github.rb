@@ -9,7 +9,8 @@ module Github
       client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
       open_pull_requests = client.pull_requests(repository_id, 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
-    rescue Octokit::Error
+    rescue => e
+      Logger.log('Error when getting open pull requests ids', e)
       sleep 5
       retry
     end
@@ -33,7 +34,8 @@ module Github
       data[:base_branch] = pull_request.base.ref
       data[:status] = statuses.empty? ? 'undefined' : statuses.first.state
       data
-    rescue Octokit::Error
+    rescue => e
+      Logger.log('Error when getting pull request', e)
       sleep 5
       retry
     end
@@ -51,7 +53,8 @@ module Github
 
       client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
       client.create_status(repository_id, head_sha, state[:status], opts)
-    rescue Octokit::Error
+    rescue => e
+      Logger.log('Error when setting pull request status', e)
       sleep 5
       retry
     end

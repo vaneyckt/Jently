@@ -45,8 +45,9 @@ while true
   open_pull_requests_ids.each do |pull_request_id|
     begin
       test_pull_request(pull_request_id)
-    rescue
+    rescue => e
       Github.set_pull_request_status(pull_request_id, {:status => 'error'})
+      Logger.log('Error in main loop', e)
     end
   end
   sleep config[:github_polling_interval_seconds]
