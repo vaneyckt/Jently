@@ -82,8 +82,8 @@ module PullRequestsData
     has_invalid_status = has_invalid_status or pull_request[:status] == 'undefined'
 
     was_updated = false
-    was_updated = was_updated or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]
-    was_updated = was_updated or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+    was_updated = (was_updated or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) if !is_new
+    was_updated = (was_updated or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]) if !is_new
 
     is_test_required = !is_merged and (is_new or has_invalid_status or (has_valid_status and was_updated))
   end
