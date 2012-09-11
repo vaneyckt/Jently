@@ -13,8 +13,7 @@
 :github_polling_interval_seconds: 60
 
 # If access to your Jenkins CI is restricted with a login and password,
-# you can enther these here. Otherwise you can delete these lines or leave
-# them untouched. Either way will work.
+# you can enther these here. Otherwise you should delete these lines.
 :jenkins_login: jenkins_login
 :jenkins_password: jenkins_password
 
