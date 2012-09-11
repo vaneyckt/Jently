@@ -37,7 +37,7 @@ module Jenkins
     end
   end
 
-  def Jenkins.start_job(job_id)
+  def Jenkins.start_job
     begin
       config = ConfigFile.read
       connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
