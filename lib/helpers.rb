@@ -85,18 +85,18 @@ module PullRequestsData
     is_merged = pull_request[:merged]
 
     has_valid_status = false
-    has_valid_status = has_valid_status or pull_request[:status] == 'success'
-    has_valid_status = has_valid_status or pull_request[:status] == 'failure'
+    has_valid_status = has_valid_status || pull_request[:status] == 'success'
+    has_valid_status = has_valid_status || pull_request[:status] == 'failure'
 
     has_invalid_status = false
-    has_invalid_status = has_invalid_status or pull_request[:status] == 'error'
-    has_invalid_status = has_invalid_status or pull_request[:status] == 'pending'
-    has_invalid_status = has_invalid_status or pull_request[:status] == 'undefined'
+    has_invalid_status = has_invalid_status || pull_request[:status] == 'error'
+    has_invalid_status = has_invalid_status || pull_request[:status] == 'pending'
+    has_invalid_status = has_invalid_status || pull_request[:status] == 'undefined'
 
     was_updated = false
-    was_updated = (was_updated or data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) if !is_new
-    was_updated = (was_updated or data[pull_request[:id]][:base_sha] != pull_request[:base_sha]) if !is_new
+    was_updated = (was_updated || data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) if !is_new
+    was_updated = (was_updated || data[pull_request[:id]][:base_sha] != pull_request[:base_sha]) if !is_new
 
-    is_test_required = !is_merged and (is_new or has_invalid_status or (has_valid_status and was_updated))
+    is_test_required = !is_merged && (is_new || has_invalid_status || (has_valid_status && was_updated))
   end
 end

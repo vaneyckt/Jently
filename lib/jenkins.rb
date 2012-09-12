@@ -21,7 +21,7 @@ module Jenkins
         c.use Faraday::Adapter::NetHttp
       end
 
-      if config.has_key?(:jenkins_login) and config.has_key?(:jenkins_password)
+      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
@@ -46,7 +46,7 @@ module Jenkins
         c.use Faraday::Adapter::NetHttp
       end
 
-      if config.has_key?(:jenkins_login) and config.has_key?(:jenkins_password)
+      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
@@ -84,7 +84,7 @@ module Jenkins
         c.use Faraday::Adapter::NetHttp
       end
 
-      if config.has_key?(:jenkins_login) and config.has_key?(:jenkins_password)
+      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
