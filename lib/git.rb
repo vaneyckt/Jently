@@ -50,8 +50,8 @@ module Git
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
-      git checkout #{pull_request[:head_branch]} &&
       git fetch --all &&
+      git checkout #{pull_request[:head_branch]} &&
       git reset --hard origin/#{pull_request[:head_branch]} &&
       git clean -df &&
       git checkout -b #{config[:testing_branch_name]} &&
