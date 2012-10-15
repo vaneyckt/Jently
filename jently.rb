@@ -38,17 +38,17 @@ def test_pull_request(pull_request_id)
 end
 
 while true
-  config = ConfigFile.read
-  open_pull_requests_ids = Github.get_open_pull_requests_ids
-  PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
+  begin
+    config = ConfigFile.read
+    open_pull_requests_ids = Github.get_open_pull_requests_ids
+    PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
-  open_pull_requests_ids.each do |pull_request_id|
-    begin
+    open_pull_requests_ids.each do |pull_request_id|
       test_pull_request(pull_request_id)
-    rescue => e
-      Github.set_pull_request_status(pull_request_id, {:status => 'error'})
-      Logger.log('Error in main loop', e)
     end
+  rescue => e
+    Github.set_pull_request_status(pull_request_id, {:status => 'error'})
+    Logger.log('Error in main loop', e)
+    sleep config[:github_polling_interval_seconds]
   end
-  sleep config[:github_polling_interval_seconds]
 end
