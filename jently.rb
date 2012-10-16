@@ -49,6 +49,6 @@ while true
   rescue => e
     Github.set_pull_request_status(pull_request_id, {:status => 'error'})
     Logger.log('Error in main loop', e)
-    sleep config[:github_polling_interval_seconds]
   end
+  sleep config[:github_polling_interval_seconds]
 end
