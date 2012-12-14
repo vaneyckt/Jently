@@ -61,9 +61,9 @@ module PullRequestsData
     data = !data ? {} : data
   end
 
-  def PullRequestsData.write(pull_request)
+  def PullRequestsData.write(data)
     path = get_path
-    File.open(path, 'w') { |f| YAML.dump(pull_request, f) }
+    File.open(path, 'w') { |f| YAML.dump(data, f) }
   end
 
   def PullRequestsData.update(pull_request)
