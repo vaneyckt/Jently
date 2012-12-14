@@ -28,11 +28,14 @@ module Github
       data[:id] = pull_request.number
       data[:merged] = pull_request.merged
       data[:mergeable] = pull_request.mergeable
-      data[:head_sha] = pull_request.head.sha
       data[:head_branch] = pull_request.head.ref
-      data[:base_sha] = pull_request.base.sha
-      data[:base_branch] = pull_request.base.ref
+      data[:head_sha] = pull_request.head.sha
       data[:status] = statuses.empty? ? 'undefined' : statuses.first.state
+
+      # Update base_sha separately. The pull_request call is
+      # not guarantueed to return the last sha of the base branch.
+      data[:base_branch] = pull_request.base.ref
+      data[:base_sha] = client.commits(repository_id, data[:base_branch]).first.sha
       data
     rescue => e
       Logger.log('Error when getting pull request', e)
