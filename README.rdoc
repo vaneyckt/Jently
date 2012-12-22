@@ -45,6 +45,6 @@ A configuration file can be found in the /config directory. There are a few conf
 
 Navigate into the Jently folder and run:
 
-    ruby jently.rb
+    ruby jently_control.rb start
 
-If this is your first run, Jently will start by cloning the specified repository into the /repositories directory, and will also create a .yaml file in the /db directory to help keep track of pull requests.
+This command will start Jently as a daemon process in the background. If this is your first run, Jently will start by cloning the specified repository into the /repositories directory, and will also create a .yaml file in the /db directory to help keep track of pull requests.
