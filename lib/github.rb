@@ -29,7 +29,7 @@ module Github
       data[:merged] = pull_request.merged
       data[:mergeable] = pull_request.mergeable
       data[:head_branch] = pull_request.head.ref
-      data[:base_branch_url] = pull_request.base.ssh_url
+      data[:base_branch_url] = pull_request.base.repo.ssh_url
       data[:base_branch] = pull_request.base.ref
       data[:head_branch_url] = pull_request.head.repo.ssh_url
       data[:head_sha] = pull_request.head.sha
