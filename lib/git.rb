@@ -66,9 +66,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git checkout #{config[:testing_branch_name]} &&
+      git checkout -b #{config[:testing_branch_name]} &&
       git push origin #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
