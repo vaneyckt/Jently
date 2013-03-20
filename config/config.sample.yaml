@@ -8,6 +8,10 @@
 # you would put git@github.com:vaneyckt/Jently.git here.
 :github_ssh_repository: git@github.com:vaneyckt/Jently.git
 
+# The branch that github has set as the develop branch for your repository.  For some
+# this is master, for others using Git Flow, this may be develop.
+:default_branch: develop
+
 # The interval between successive communications with GitHub.
 # This makes sure we don't end up spamming GitHub's servers.
 :github_polling_interval_seconds: 60

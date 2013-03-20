@@ -17,12 +17,13 @@ module Git
 
   def Git.delete_local_testing_branch
     config = ConfigFile.read
+    default_branch = config[:default_branch] ||= 'master'
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
-      git checkout master &&
+      git checkout #{default_branch} &&
       git branch -D #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
@@ -31,12 +32,13 @@ module Git
 
   def Git.delete_remote_testing_branch
     config = ConfigFile.read
+    default_branch = config[:default_branch] ||= 'master'
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
-      git checkout master &&
+      git checkout #{default_branch} &&
       git push origin :#{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
