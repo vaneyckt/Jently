@@ -9,8 +9,8 @@ task :start do
 end
 
 task :stop do
-  rm pid_file
   sh "ruby jently_control.rb stop"
+  rm pid_file
 end
 
 task :toggle do
