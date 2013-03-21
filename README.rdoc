@@ -39,7 +39,7 @@ You'll need to clone the Jently repository to your hard drive in order to get st
 
 === Modifying the configuration file
 
-A configuration file can be found in the /config directory. There are a few configuration details that you will need to specify before running Jently. The comments in the file should hopefully make it easy to get everything set up right.
+A configuration file can be found in the /config directory. There are a few configuration details that you will need to specify before running Jently. The comments in the file should hopefully make it easy to get everything set up right. Store configuration that you don't want checked in to the repo in your +.env+ file, which can be derived by copying the +.env.example+ file to +.env+ and editing the settings to suit your needs.
 
 === Running Jently
 
