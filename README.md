@@ -18,15 +18,15 @@ You will need to setup a parameterized Jenkins build for testing pull requests. 
 
 On the Configure build screen of your job, you'll want to check the 'This build is parameterized' checkbox and add a 'branch', 'repository', and 'id' parameter. The order of the parameters is important. It should look like this:
 
-http://imgur.com/5Q3iA.png
+![image](http://imgur.com/5Q3iA.png)
 
 Further down on the Configure build screen you can specify your Source Code Management settings. Make sure that your branch specifier is set to '$branch' and that your repository url is set to '$repository'. It should look like this:
 
-http://imgur.com/2a2A5.png
+![image](http://imgur.com/2a2A5.png)
 
 You can optionally add the Jenkins Text Finder plugin to more accurately mark builds as Stable vs. Unstable.
 
-http://imgur.com/DbvknLj.png
+![image](http://imgur.com/DbvknLj.png)
 
 ### Modifying the configuration file
 
@@ -49,7 +49,7 @@ Jently tests the merged version of a pull request rather than just the feature b
 ### Automatic Re-Testing
 Jently automatically re-runs tests whenever new commits are added to either the pull request itself or the branch that the pull request needs to be merged into.  Each latest commit associated with a new batch of commits is marked as stable or unstable.
 
-http://i.imgur.com/B16IBjO.png
+![image](http://i.imgur.com/B16IBjO.png)
 
 ### Github API
 Jently uses the [Github Commit Status API](https://github.com/blog/1227-commit-status-api) to update the status of the last commit of a pull request. Whenever possible, a status update contains a link to the Jenkins job that was run to ascertain the correct status.
