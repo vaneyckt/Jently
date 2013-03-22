@@ -1,6 +1,10 @@
 require 'bundler/setup'
 require 'rake'
 
+# RSpec
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new('spec')
+
 namespace :server do
   desc "Start the Jently server and write a PID file."
   task :start do
