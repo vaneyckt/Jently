@@ -8,7 +8,6 @@ end
 
 desc "Stop the server."
 task :stop do
-  rm pid_file
   sh 'ruby jently_control.rb stop'
 end
 
