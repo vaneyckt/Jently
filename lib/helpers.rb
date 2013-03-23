@@ -85,7 +85,7 @@ module PullRequestsData
     data.keys
   end
 
-  def PullReqestsData.is_success_status_outdated(pull_request)
+  def PullRequestsData.is_success_status_outdated(pull_request)
     data = read
     is_outdated = (data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
   end
