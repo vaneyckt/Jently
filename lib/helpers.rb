@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 
 module Logger
   def Logger.get_path
@@ -19,7 +20,9 @@ module ConfigFile
 
   def ConfigFile.read
     path = get_path
-    data = YAML.load(File.read(path)) if File.exists?(path)
+    raw_data = IO.read path
+    erbified_data = ERB.new(raw_data).result
+    data = YAML.load(erbified_data) if File.exists?(path)
     data = !data ? {} : data
   end
 end
@@ -57,7 +60,9 @@ module PullRequestsData
 
   def PullRequestsData.read
     path = get_path
-    data = YAML.load(File.read(path)) if File.exists?(path)
+    raw_data = IO.read path
+    erbified_data = ERB.new(raw_data).result
+    data = YAML.load(erbified_data) if File.exists?(path)
     data = !data ? {} : data
   end
 

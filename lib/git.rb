@@ -17,12 +17,13 @@ module Git
 
   def Git.delete_local_testing_branch
     config = ConfigFile.read
+    default_branch = config[:default_branch] ||= 'master'
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
-      git checkout master &&
+      git checkout #{default_branch} &&
       git branch -D #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
@@ -31,12 +32,13 @@ module Git
 
   def Git.delete_remote_testing_branch
     config = ConfigFile.read
+    default_branch = config[:default_branch] ||= 'master'
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
-      git checkout master &&
+      git checkout #{default_branch} &&
       git push origin :#{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
@@ -51,11 +53,9 @@ module Git
       git reset --hard &&
       git clean -df &&
       git fetch --all &&
-      git checkout #{pull_request[:head_branch]} &&
-      git reset --hard origin/#{pull_request[:head_branch]} &&
-      git clean -df &&
-      git checkout -b #{config[:testing_branch_name]} &&
-      git pull origin #{pull_request[:base_branch]}
+      git checkout #{pull_request[:base_branch]} &&
+      git reset --hard origin/#{pull_request[:base_branch]} &&
+      git pull #{pull_request[:head_branch_url]} #{pull_request[:head_branch]}
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
@@ -66,9 +66,7 @@ module Git
     repository_path = Repository.get_path
     cmd = <<-GIT
       cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git checkout #{config[:testing_branch_name]} &&
+      git checkout -b #{config[:testing_branch_name]} &&
       git push origin #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
