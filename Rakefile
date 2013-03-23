@@ -36,4 +36,4 @@ namespace :logs do
 end
 
 
-task :default => :server
+task :default => :spec
