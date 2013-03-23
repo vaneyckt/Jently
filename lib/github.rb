@@ -33,7 +33,7 @@ module Github
       data[:status] = statuses.empty? ? 'undefined' : statuses.first.state
 
       # Update base_sha separately. The pull_request call is
-      # not guarantueed to return the last sha of the base branch.
+      # not guaranteed to return the last sha of the base branch.
       data[:base_branch] = pull_request.base.ref
       data[:base_sha] = client.commits(repository_id, data[:base_branch]).first.sha
       data
