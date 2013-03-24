@@ -61,7 +61,7 @@ while true
     end
 
     pull_request_id_to_test = nil
-    open_pull_requests_ids.each do |pull_request_id|
+    open_pull_requests_ids.shuffle.each do |pull_request_id|
       if pull_request_id_to_test.nil?
         pull_request = Github.get_pull_request(pull_request_id)
         pull_request_id_to_test = pull_request_id if PullRequestsData.is_test_required(pull_request)
