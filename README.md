@@ -3,6 +3,8 @@
 
 Jently is a Ruby app that makes it possible for Jenkins to run tests on open pull requests on Github. Jently itself acts as a mediator between Jenkins and Github. It talks to Github to get open pull requests, creates a testing branches and instructs Jenkins to run tests on each branch. After Jenkins has finished testing the branch, Jently collects the result and updates the status of the relevant pull request commit through the Github API.
 
+Why use Jently over Travis CI?  Jently can be used with closed source repositories, something that Travis CI is only in the beginning stages of supporting.
+
 ## Getting Started
 
 There are 5 small steps involved in getting Jently up and running. These steps assume you have a recent version of Ruby installed and have sufficient access to your Jenkins CI so as to add builds.
