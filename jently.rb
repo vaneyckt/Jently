@@ -42,7 +42,7 @@ def validate_success_status(pull_request_id)
   begin
     pull_request = Github.get_pull_request(pull_request_id)
     if PullRequestsData.is_success_status_outdated(pull_request)
-      Github.set_pull_request_status(pull_request_id, {:status => 'success', :description => "This will be retested as the #{pull_request[:base_branch]} branch has been updated."})
+      Github.set_pull_request_status(pull_request_id, {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."})
     end
   rescue => e
     Logger.log('Error when validating success status', e)
