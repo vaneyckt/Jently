@@ -1,5 +1,5 @@
-require 'yaml'
 require 'erb'
+require 'yaml'
 
 module Logger
   def Logger.get_path
@@ -15,14 +15,16 @@ end
 
 module ConfigFile
   def ConfigFile.get_path
-    "#{Dir.pwd}/config/config.yaml"
+    "#{Dir.pwd}/config/config.yaml.erb"
   end
 
   def ConfigFile.read
     path = get_path
-    raw_data = IO.read path
-    erbified_data = ERB.new(raw_data).result
-    data = YAML.load(erbified_data) if File.exists?(path)
+    if File.exists?(path)
+      raw_data = File.read path
+      erbified_data = ERB.new(raw_data).result
+      data = YAML.load(erbified_data)
+    end
     data = !data ? {} : data
   end
 end

@@ -1,5 +1,11 @@
 ---
 # The account that Jently will use for communicating with GitHub.
+# Note that this config file supports ERB. This allows you to store
+# sensitive information as shell environment variables which can then
+# be referred to in this file.
+# For example, if you were to store your github login as the GITHUB_LOGIN
+# environment variable, the line below could be written like this:
+# :github_login: <%= ENV['GITHUB_LOGIN'] %>
 :github_login: github_login
 :github_password: github_password
 
