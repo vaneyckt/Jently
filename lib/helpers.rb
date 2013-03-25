@@ -79,6 +79,12 @@ module PullRequestsData
     write(data)
   end
 
+  def PullRequestsData.update_status(pull_request_id, status)
+    data = read
+    data[pull_request_id] = status
+    write(data)
+  end
+
   def PullRequestsData.find_pull_request_ids_with_success_status
     data = read
     data.delete_if { |pull_request_id, pull_request| pull_request[:status] != 'success' }

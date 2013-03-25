@@ -56,6 +56,7 @@ module Github
 
       client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
       client.create_status(repository_id, head_sha, state[:status], opts)
+      PullRequestsData.update_status(pull_request_id, state[:status])
     rescue => e
       Logger.log('Error when setting pull request status', e)
       sleep 5
