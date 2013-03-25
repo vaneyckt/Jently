@@ -81,7 +81,7 @@ module PullRequestsData
 
   def PullRequestsData.update_status(pull_request_id, status)
     data = read
-    data[pull_request_id] = status
+    data[pull_request_id][:status] = status
     write(data)
   end
 
