@@ -79,6 +79,17 @@ module PullRequestsData
     write(data)
   end
 
+  def PullRequestsData.find_pull_request_ids_with_success_status
+    data = read
+    data.delete_if { |pull_request_id, pull_request| pull_request[:status] != 'success' }
+    data.keys
+  end
+
+  def PullRequestsData.is_success_status_outdated(pull_request)
+    data = read
+    is_outdated = (data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
+  end
+
   def PullRequestsData.is_test_required(pull_request)
     data = read
     is_new = !data.has_key?(pull_request[:id])
