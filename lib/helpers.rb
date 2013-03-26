@@ -62,9 +62,7 @@ module PullRequestsData
 
   def PullRequestsData.read
     path = get_path
-    raw_data = IO.read path
-    erbified_data = ERB.new(raw_data).result
-    data = YAML.load(erbified_data) if File.exists?(path)
+    data = YAML.load(File.read(path)) if File.exists?(path)
     data = !data ? {} : data
   end
 
