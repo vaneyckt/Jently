@@ -21,7 +21,7 @@ module ConfigFile
   def ConfigFile.read
     path = get_path
     if File.exists?(path)
-      raw_data = File.read path
+      raw_data = File.read(path)
       erbified_data = ERB.new(raw_data).result
       data = YAML.load(erbified_data)
     end
