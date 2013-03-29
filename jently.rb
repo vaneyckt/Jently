@@ -7,7 +7,7 @@ def test_pull_request(pull_request_id)
   begin
     config = ConfigFile.read
     pull_request = Github.get_pull_request(pull_request_id)
-    PullRequestsData.update(pull_request)
+    PullRequestsData.update(pull_request, :priority => -1, :is_test_required => false)
 
     if pull_request[:mergeable] == false
       Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'})
@@ -44,12 +44,7 @@ def update_pull_request_data(pull_request_id)
     if PullRequestsData.is_success_status_outdated(pull_request)
       Github.set_pull_request_status(pull_request_id, {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."})
     end
-
-    opts = {}
-    opts[:priority] = PullRequestsData.get_priority(pull_request)
-    opts[:is_test_required] = PullRequestsData.is_test_required(pull_request)
-
-    PullRequestsData.update(pull_request, opts)
+    PullRequestsData.update(pull_request, :priority => PullRequestsData.get_priority(pull_request), :is_test_required => PullRequestsData.is_test_required(pull_request))
   rescue => e
     Logger.log('Error when updating pull request data', e)
   end
