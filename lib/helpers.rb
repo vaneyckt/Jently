@@ -66,7 +66,7 @@ module PullRequestsData
     File.open(path, 'w') { |f| YAML.dump(data, f) }
   end
 
-  def PullRequestsData.update(pull_request, opts = {:priority => 0, :is_test_required => false})
+  def PullRequestsData.update(pull_request, opts = {:priority => -1, :is_test_required => false})
     data = read
     data[pull_request[:id]] = pull_request.merge(opts)
     write(data)
