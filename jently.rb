@@ -67,8 +67,9 @@ while true
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
     test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
+
+    sleep config[:github_polling_interval_seconds]
   rescue => e
     Logger.log('Error in main loop', e)
   end
-  sleep config[:github_polling_interval_seconds]
 end
