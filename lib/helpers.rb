@@ -1,3 +1,4 @@
+require 'erb'
 require 'yaml'
 
 module Logger
@@ -19,7 +20,11 @@ module ConfigFile
 
   def ConfigFile.read
     path = get_path
-    data = YAML.load(File.read(path)) if File.exists?(path)
+    if File.exists?(path)
+      raw_data = File.read(path)
+      erbified_data = ERB.new(raw_data).result
+      data = YAML.load(erbified_data)
+    end
     data = !data ? {} : data
   end
 end
