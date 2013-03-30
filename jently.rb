@@ -7,7 +7,7 @@ def test_pull_request(pull_request_id)
   begin
     config = ConfigFile.read
     pull_request = Github.get_pull_request(pull_request_id)
-    PullRequestsData.update(pull_request)
+    PullRequestsData.update(pull_request, :priority => -1, :is_test_required => false)
 
     if pull_request[:mergeable] == false
       Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'})
@@ -38,14 +38,15 @@ def test_pull_request(pull_request_id)
   end
 end
 
-def validate_success_status(pull_request_id)
+def update_pull_request_data(pull_request_id)
   begin
     pull_request = Github.get_pull_request(pull_request_id)
     if PullRequestsData.is_success_status_outdated(pull_request)
       Github.set_pull_request_status(pull_request_id, {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."})
     end
+    PullRequestsData.update(pull_request, :priority => PullRequestsData.get_priority(pull_request), :is_test_required => PullRequestsData.is_test_required(pull_request))
   rescue => e
-    Logger.log('Error when validating success status', e)
+    Logger.log('Error when updating pull request data', e)
   end
 end
 
@@ -55,21 +56,15 @@ while true
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
-    pull_request_ids_with_success_status = PullRequestsData.find_pull_request_ids_with_success_status
-    pull_request_ids_with_success_status.each do |pull_request_id|
-      validate_success_status(pull_request_id)
+    open_pull_requests_ids.each do |pull_request_id|
+      update_pull_request_data(pull_request_id)
     end
 
-    pull_request_id_to_test = nil
-    open_pull_requests_ids.shuffle.each do |pull_request_id|
-      if pull_request_id_to_test.nil?
-        pull_request = Github.get_pull_request(pull_request_id)
-        pull_request_id_to_test = pull_request_id if PullRequestsData.is_test_required(pull_request)
-      end
-    end
+    pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
     test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
+
+    sleep config[:github_polling_interval_seconds]
   rescue => e
     Logger.log('Error in main loop', e)
   end
-  sleep config[:github_polling_interval_seconds]
 end
