@@ -71,9 +71,9 @@ module PullRequestsData
     File.open(path, 'w') { |f| YAML.dump(data, f) }
   end
 
-  def PullRequestsData.update(pull_request)
+  def PullRequestsData.update(pull_request, opts)
     data = read
-    data[pull_request[:id]] = pull_request
+    data[pull_request[:id]] = pull_request.merge(opts)
     write(data)
   end
 
@@ -90,15 +90,27 @@ module PullRequestsData
     write(data)
   end
 
-  def PullRequestsData.find_pull_request_ids_with_success_status
-    data = read
-    data.delete_if { |pull_request_id, pull_request| pull_request[:status] != 'success' }
-    data.keys
-  end
-
   def PullRequestsData.is_success_status_outdated(pull_request)
     data = read
-    is_outdated = (data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
+    is_new = !data.has_key?(pull_request[:id])
+
+    is_outdated = true
+    is_outdated = is_outdated && !is_new
+    is_outdated = is_outdated && pull_request[:status] == 'success'
+    is_outdated = is_outdated && data[pull_request[:id]][:status] == 'success'
+    is_outdated = is_outdated && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+  end
+
+  def PullRequestsData.get_pull_request_id_to_test
+    data = read
+    pull_requests_that_require_testing = data.select { |pull_request_id, pull_request| pull_request[:is_test_required] }
+    pull_request_id_to_test = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request_id, pull_request| pull_request[:priority] }.first
+  end
+
+  def PullRequestsData.get_priority(pull_request)
+    data = read
+    is_new = !data.has_key?(pull_request[:id])
+    priority = (is_new) ? 0 : (data[pull_request[:id]][:priority] + 1)
   end
 
   def PullRequestsData.is_test_required(pull_request)
