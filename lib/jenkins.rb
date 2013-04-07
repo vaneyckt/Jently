@@ -51,7 +51,7 @@ module Jenkins
       end
 
       job_id = (Time.now.to_f * 1000000).to_i.to_s
-      connection.get do |req|
+      connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
         req.params[:repository] = config[:github_ssh_repository]
