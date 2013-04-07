@@ -1,4 +1,3 @@
-require 'rake'
 require 'bundler/setup'
 
 namespace :jently do
