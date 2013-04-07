@@ -1,4 +1,5 @@
 require 'faraday'
+require 'faraday_middleware'
 require './lib/helpers.rb'
 
 module Jenkins
