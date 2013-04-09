@@ -13,12 +13,6 @@ Jently is a Ruby app that makes it possible for Jenkins to run tests on open pul
 
 There are 5 small steps involved in getting Jently up and running. These steps assume you have a recent version of Ruby installed and have sufficient access to your Jenkins CI so as to add builds.
 
-=== Installing the software
-
-Jently requires several Ruby gems to be installed. You can install all of these in one go by running:
-
-    gem install jently
-
 === Modifying your Jenkins CI
 
 You will need to setup a parameterized Jenkins build for testing pull requests. Jently will instruct Jenkins to use this build for running tests on an open pull request. You can tell Jently about this build by modifying its configuration file. We will look at this configuration file in a later step, but for now let's focus on setting up the parameterized build.
@@ -41,10 +35,20 @@ You'll need to clone the Jently repository to your hard drive in order to get st
 
 A configuration file can be found in the /config directory. There are a few configuration details that you will need to specify before running Jently. The comments in the file should hopefully make it easy to get everything set up right.
 
+=== Installing the software
+
+Jently uses bundler to install the Ruby gems it requires. You can install bundler by running:
+
+    gem install bundler
+
+You can now use bundler to install the required gems by navigating into the Jently folder and running:
+
+    bundle install
+
 === Running Jently
 
 Navigate into the Jently folder and run:
 
-    ruby jently_control.rb start
+    bundle exec rake jently:start
 
 This command will start Jently as a daemon process in the background. If this is your first run, Jently will start by cloning the specified repository into the /repositories directory, and will also create a .yaml file in the /db directory to help keep track of pull requests.
