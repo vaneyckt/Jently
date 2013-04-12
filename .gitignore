@@ -3,3 +3,5 @@ jently.pid
 .ruby-version
 .ruby-gemset
 config/config.yaml
+db/*
+repositories/*
