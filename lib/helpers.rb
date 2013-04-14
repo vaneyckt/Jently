@@ -74,6 +74,8 @@ module PullRequestsData
   def PullRequestsData.update(pull_request)
     data = read
     data[pull_request[:id]] = pull_request
+    data[pull_request[:id]][:priority] ||= 0
+    data[pull_request[:id]][:is_test_required] ||= false
     write(data)
   end
 
