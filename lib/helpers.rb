@@ -144,7 +144,7 @@ module PullRequestsData
     has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
 
     Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."}) if has_outdated_success_status
-    Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'}) if !is_mergeable
+    Github.set_pull_request_status(pull_request[:id], {:status => 'failure', :description => 'Unmergeable pull request.'}) if !is_mergeable
 
     is_test_required = !is_merged && is_mergeable && (is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated))
   end
