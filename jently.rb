@@ -39,7 +39,9 @@ while true
 
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
-      PullRequestsData.update(pull_request, :priority => PullRequestsData.get_priority(pull_request), :is_test_required => PullRequestsData.is_test_required(pull_request))
+      PullRequestsData.update(pull_request)
+      PullRequestsData.update_priority(pull_request_id, PullRequestsData.get_priority(pull_request))
+      PullRequestsData.update_is_test_required(pull_request_id, PullRequestsData.is_test_required(pull_request))
     end
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test

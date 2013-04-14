@@ -71,9 +71,9 @@ module PullRequestsData
     File.open(path, 'w') { |f| YAML.dump(data, f) }
   end
 
-  def PullRequestsData.update(pull_request, opts)
+  def PullRequestsData.update(pull_request)
     data = read
-    data[pull_request[:id]] = pull_request.merge(opts)
+    data[pull_request[:id]] = pull_request
     write(data)
   end
 
