@@ -60,7 +60,7 @@ module Github
       PullRequestsData.update_status(pull_request_id, state[:status])
 
       if state[:status] == 'success' || state[:status] == 'failure'
-        PullRequestsData.update_priority(pull_request_id, -1)
+        PullRequestsData.update_priority(pull_request_id, 0)
         PullRequestsData.update_is_test_required(pull_request_id, false)
       end
     rescue => e

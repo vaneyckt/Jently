@@ -74,7 +74,7 @@ module PullRequestsData
   def PullRequestsData.update(pull_request)
     data = read
     data[pull_request[:id]] = pull_request
-    data[pull_request[:id]][:priority] ||= 0
+    data[pull_request[:id]][:priority] ||= -1
     data[pull_request[:id]][:is_test_required] ||= false
     write(data)
   end
@@ -110,15 +110,14 @@ module PullRequestsData
     pull_request_id_to_test = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request_id, pull_request| pull_request[:priority] }.first
   end
 
-  def PullRequestsData.get_priority(pull_request)
+  def PullRequestsData.get_new_priority(pull_request)
     data = read
-    is_new = !data.has_key?(pull_request[:id])
-    priority = (is_new) ? 0 : (data[pull_request[:id]][:priority] + 1)
+    priority = data[pull_request[:id]][:priority] + 1
   end
 
   def PullRequestsData.is_test_required(pull_request)
     data = read
-    is_new = !data.has_key?(pull_request[:id])
+    is_new = data[pull_request[:id]][:priority] == -1
 
     is_merged = pull_request[:merged]
     is_mergeable = pull_request[:mergeable]
