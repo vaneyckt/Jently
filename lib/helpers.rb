@@ -90,15 +90,16 @@ module PullRequestsData
     write(data)
   end
 
-  def PullRequestsData.is_success_status_outdated(pull_request)
+  def PullRequestsData.update_priority(pull_request_id, priority)
     data = read
-    is_new = !data.has_key?(pull_request[:id])
+    data[pull_request_id][:priority] = priority
+    write(data)
+  end
 
-    is_outdated = true
-    is_outdated = is_outdated && !is_new
-    is_outdated = is_outdated && pull_request[:status] == 'success'
-    is_outdated = is_outdated && data[pull_request[:id]][:status] == 'success'
-    is_outdated = is_outdated && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+  def PullRequestsData.update_is_test_required(pull_request_id, is_test_required)
+    data = read
+    data[pull_request_id][:is_test_required] = is_test_required
+    write(data)
   end
 
   def PullRequestsData.get_pull_request_id_to_test
@@ -116,7 +117,9 @@ module PullRequestsData
   def PullRequestsData.is_test_required(pull_request)
     data = read
     is_new = !data.has_key?(pull_request[:id])
+
     is_merged = pull_request[:merged]
+    is_mergeable = pull_request[:mergeable]
 
     has_valid_status = false
     has_valid_status = has_valid_status || pull_request[:status] == 'success'
@@ -128,9 +131,21 @@ module PullRequestsData
     has_invalid_status = has_invalid_status || pull_request[:status] == 'undefined'
 
     was_updated = false
-    was_updated = (was_updated || data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) if !is_new
-    was_updated = (was_updated || data[pull_request[:id]][:base_sha] != pull_request[:base_sha]) if !is_new
+    was_updated = (is_new) ? false : (was_updated || data[pull_request[:id]][:head_sha] != pull_request[:head_sha])
+    was_updated = (is_new) ? false : (was_updated || data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
 
-    is_test_required = !is_merged && (is_new || has_invalid_status || (has_valid_status && was_updated))
+    is_waiting_to_be_tested = (is_new) ? false : data[pull_request[:id]][:is_test_required]
+    has_inconsistent_status = (is_new) ? false : pull_request[:status] != data[pull_request[:id]][:status]
+
+    has_outdated_success_status = true
+    has_outdated_success_status = has_outdated_success_status && !is_new
+    has_outdated_success_status = has_outdated_success_status && pull_request[:status] == 'success'
+    has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:status] == 'success'
+    has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+
+    Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."}) if has_outdated_success_status
+    Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'}) if !is_mergeable
+
+    is_test_required = !is_merged && is_mergeable && (is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated))
   end
 end
