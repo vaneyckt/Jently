@@ -55,14 +55,14 @@ module Git
       git reset --hard origin/#{pull_request[:base_branch]} &&
       git clean -df &&
       git checkout #{pull_request[:base_sha]} &&
-      git checkout -b #{config[:testing_branch_name]_base} &&
+      git checkout -b #{config[:testing_branch_name]}_base &&
       git checkout #{pull_request[:head_branch]} &&
       git reset --hard origin/#{pull_request[:head_branch]} &&
       git clean -df &&
       git checkout #{pull_request[:head_sha]} &&
       git checkout -b #{config[:testing_branch_name]} &&
-      git merge #{config[:testing_branch_name]_base}
-      git branch -D #{config[:testing_branch_name]_base}
+      git merge #{config[:testing_branch_name]}_base
+      git branch -D #{config[:testing_branch_name]}_base
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
