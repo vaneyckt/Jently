@@ -58,6 +58,11 @@ module Github
       client.create_status(repository_id, head_sha, state[:status], opts)
 
       PullRequestsData.update_status(pull_request_id, state[:status])
+
+      if state[:status] == 'success' || state[:status] == 'failure'
+        PullRequestsData.update_priority(pull_request_id, 0)
+        PullRequestsData.update_is_test_required(pull_request_id, false)
+      end
     rescue => e
       Logger.log('Error when setting pull request status', e)
       sleep 5
