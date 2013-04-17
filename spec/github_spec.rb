@@ -171,4 +171,124 @@ describe Github do
       end
     end
   end
+
+  describe '.set_pull_request_status' do
+    let(:pull_request_id) { 1234 }
+    let(:octokit_client)  { mock(Octokit::Client) }
+    let(:success_state)   { { :url => 'http://valid.url', :status => 'success',
+                              :description => 'valid description' } }
+    let(:undefined_state) { { :url => nil, :status => 'undefined', :description => nil } }
+    let(:failed_state)    { { :status => 'failure' } }
+
+    let(:head_sha) { 'abcdefg' }
+    let(:pull_requests_data) { { pull_request_id => {:head_sha => head_sha} } }
+
+    before do
+      Octokit::Client.stub(:new).and_return(octokit_client)
+      PullRequestsData.stub(:read).and_return(pull_requests_data)
+      PullRequestsData.stub(:update_status)
+      PullRequestsData.stub(:update_priority)
+      PullRequestsData.stub(:update_is_test_required)
+      octokit_client.stub(:create_status)
+    end
+
+    it 'instantiates a new Octokit client, specifying credentials from the config file' do
+      expected_params = { :login => github_login, :password => github_password }
+      Octokit::Client.should_receive(:new).with( hash_including(expected_params) ).and_return( octokit_client )
+
+      Github.set_pull_request_status(pull_request_id, success_state)
+    end
+
+    it 'tells the OctoKit client to create a new status, specifying repo id, head sha, and build status' do
+      octokit_client.should_receive(:create_status).with(repo_id, head_sha, 'success', anything())
+
+      Github.set_pull_request_status(pull_request_id, success_state)
+    end
+
+    context 'when the specified state has a non-nil jenkins url' do
+      it 'includes the jenkins url in the options passed to client create_status' do
+        opts = {:description => success_state[:description]}
+        octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), hash_including(opts) )
+
+        Github.set_pull_request_status(pull_request_id, success_state)
+      end
+    end
+
+    context 'when the specified state has a non-nil description' do
+      it 'includes the description in the options passed to client create_status' do
+        opts = {:target_url => success_state[:url]}
+        octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), hash_including(opts) )
+
+        Github.set_pull_request_status(pull_request_id, success_state)
+      end
+    end
+
+    context 'when the specified state has a nil jenkins url or descritpion' do
+      it 'does not include a url or description keys in the options passed to client create_status' do
+        octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), {} )
+
+        Github.set_pull_request_status(pull_request_id, undefined_state)
+      end
+    end
+
+    it 'tells PullRequestsData to update_status' do
+      PullRequestsData.should_receive(:update_status).with(pull_request_id, success_state[:status])
+
+      Github.set_pull_request_status(pull_request_id, success_state)
+    end
+
+    context 'when the specified state has a status that is neither success or failure' do
+      it 'does not tell PullRequestsData to update priority or update is_test_required' do
+        PullRequestsData.should_not_receive(:update_priority)
+        PullRequestsData.should_not_receive(:update_is_test_required)
+
+        Github.set_pull_request_status(pull_request_id, undefined_state)
+      end
+    end
+
+    context 'when the specified state has a status of success' do
+      it 'tells PullRequestsData to update priority and update is_test_required' do
+        PullRequestsData.should_receive(:update_priority).with(pull_request_id, 0)
+        PullRequestsData.should_receive(:update_is_test_required).with(pull_request_id, false)
+
+        Github.set_pull_request_status(pull_request_id, success_state)
+      end
+    end
+
+    context 'when the specified state has a status of failure' do
+      it 'tells PullRequestsData to update priority and update is_test_required' do
+        PullRequestsData.should_receive(:update_priority).with(pull_request_id, 0)
+        PullRequestsData.should_receive(:update_is_test_required).with(pull_request_id, false)
+
+        Github.set_pull_request_status(pull_request_id, failed_state)
+      end
+    end
+
+    context 'when a request fails' do
+      let(:octokit_error) { StandardError.new('some octokit failure') }
+
+      before do
+        octokit_call_counter = 0
+        octokit_client.stub(:create_status) do
+          octokit_call_counter += 1
+          raise octokit_error if octokit_call_counter < 2
+        end
+      end
+
+      it 'logs the failure' do
+        Logger.should_receive(:log).with('Error when setting pull request status', octokit_error)
+
+        Github.set_pull_request_status(pull_request_id, success_state)
+      end
+
+      it 'retries the request after a 5 second delay' do
+        Octokit::Client.should_receive(:new).twice.and_return(octokit_client, octokit_client)
+        octokit_client.should_receive(:create_status).twice
+        Github.should_receive(:sleep).with(5)
+
+        Github.set_pull_request_status(pull_request_id, success_state)
+      end
+    end
+
+  end
 end
