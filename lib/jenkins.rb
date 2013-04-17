@@ -44,6 +44,10 @@ module Jenkins
     end
   end
 
+  def Jenkins.new_job_id
+    (Time.now.to_f * 1000000).to_i.to_s
+  end
+
   def Jenkins.start_job
     begin
       config = ConfigFile.read
@@ -57,7 +61,7 @@ module Jenkins
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
-      job_id = (Time.now.to_f * 1000000).to_i.to_s
+      job_id = new_job_id
       connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
