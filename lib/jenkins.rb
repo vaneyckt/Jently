@@ -69,6 +69,8 @@ module Jenkins
       end
       job_id
     rescue => e
+      raise(e) if e.class.to_s =~ /\AWebMock::/
+
       Logger.log('Error when starting job', e)
       sleep 5
       retry
@@ -117,6 +119,8 @@ module Jenkins
       end
       state
     rescue => e
+      raise(e) if e.class.to_s =~ /\AWebMock::/
+
       Logger.log('Error when getting job state', e)
       sleep 5
       retry
