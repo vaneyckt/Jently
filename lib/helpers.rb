@@ -144,6 +144,7 @@ module PullRequestsData
     has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:status] == 'success'
     has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
 
+these need to be more out in the open. Aslo try not to spam statuses.
     Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."}) if has_outdated_success_status
     Github.set_pull_request_status(pull_request[:id], {:status => 'failure', :description => 'Unmergeable pull request.'}) if !is_mergeable
 
