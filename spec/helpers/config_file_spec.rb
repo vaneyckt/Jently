@@ -6,11 +6,11 @@ describe ConfigFile do
 
     before do
       ConfigFile.stub(:get_path).and_return(config_path)
-      File.unlink(config_path) if File.exists?(config_path)
+      File.delete(config_path) if File.exists?(config_path)
     end
 
     after do
-      File.unlink(config_path) if File.exists?(config_path)
+      File.delete(config_path) if File.exists?(config_path)
     end
 
     context 'when no config file exists' do

@@ -6,11 +6,11 @@ describe Logger do
 
     before do
       Logger.stub(:get_path).and_return(log_path)
-      File.unlink(log_path) if File.exists?(log_path)
+      File.delete(log_path) if File.exists?(log_path)
     end
 
     after do
-      File.unlink(log_path) if File.exists?(log_path)
+      File.delete(log_path) if File.exists?(log_path)
     end
 
     context 'when an exception is specified' do
