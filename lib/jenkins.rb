@@ -44,11 +44,11 @@ module Jenkins
     end
   end
 
-  def Jenkins.new_job_id
-    (Time.now.to_f * 1000000).to_i.to_s
+  def Jenkins.new_job_id(pull_request_id)
+    "#{pull_request_id}-#{(Time.now.to_f * 1000000).to_i}"
   end
 
-  def Jenkins.start_job
+  def Jenkins.start_job(pull_request_id)
     begin
       config = ConfigFile.read
       connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
@@ -61,7 +61,7 @@ module Jenkins
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
-      job_id = new_job_id
+      job_id = Jenkins.new_job_id(pull_request_id)
       connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
