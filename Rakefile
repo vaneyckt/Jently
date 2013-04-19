@@ -5,7 +5,7 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new('spec')
 
 namespace :jently do
-  desc "Start the Jently server and write a PID file."
+  desc "Start Jently."
   task :start do
     sh 'ruby jently_control.rb start'
   end
