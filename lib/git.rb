@@ -43,11 +43,6 @@ module Git
     Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
-make the code reflect that you have two local branches. Make separate method for other branch!
-is_test_required false has priority 1, everything else has priority 0
-this is because of setting priority to 0 when setting failure
-why not use a flag in the bd file to indicate new pr's
-
   def Git.create_local_testing_branch(pull_request)
     config = ConfigFile.read
     repository_path = Repository.get_path
@@ -56,18 +51,9 @@ why not use a flag in the bd file to indicate new pr's
       git reset --hard &&
       git clean -df &&
       git fetch --all &&
-      git checkout #{pull_request[:base_branch]} &&
-      git reset --hard origin/#{pull_request[:base_branch]} &&
-      git clean -df &&
-      git checkout #{pull_request[:base_sha]} &&
-      git checkout -b #{config[:testing_branch_name]}_base &&
-      git checkout #{pull_request[:head_branch]} &&
-      git reset --hard origin/#{pull_request[:head_branch]} &&
-      git clean -df &&
       git checkout #{pull_request[:head_sha]} &&
       git checkout -b #{config[:testing_branch_name]} &&
-      git merge #{config[:testing_branch_name]}_base
-      git branch -D #{config[:testing_branch_name]}_base
+      git merge #{pull_request[:base_sha]}
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
