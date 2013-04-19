@@ -289,6 +289,5 @@ describe Github do
         Github.set_pull_request_status(pull_request_id, success_state)
       end
     end
-
   end
 end
