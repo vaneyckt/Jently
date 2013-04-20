@@ -6,7 +6,7 @@ module Jenkins
   def Jenkins.wait_for_idle_executor
     config = ConfigFile.read
     while true
-      return if Jenkins.get_nb_of_idle_executors >= 1
+      return if get_nb_of_idle_executors >= 1
       sleep config[:jenkins_polling_interval_seconds]
     end
   end
@@ -61,7 +61,7 @@ module Jenkins
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
-      job_id = Jenkins.new_job_id(pull_request_id)
+      job_id = new_job_id(pull_request_id)
       connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
@@ -80,7 +80,7 @@ module Jenkins
   def Jenkins.wait_on_job(job_id)
     config = ConfigFile.read
     while true
-      state = Jenkins.get_job_state(job_id)
+      state = get_job_state(job_id)
       return state if !state.nil?
       sleep config[:jenkins_polling_interval_seconds]
     end

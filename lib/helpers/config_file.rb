@@ -10,7 +10,7 @@ module ConfigFile
       erbified_data = ERB.new(raw_data).result
       YAML.load(erbified_data) || {}
     else
-      Logger.log("Config file unavailable -- no log file found in #{ConfigFile.get_path}")
+      Logger.log("Config file unavailable -- no log file found in #{get_path}")
     end
   end
 end
