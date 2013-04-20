@@ -49,7 +49,7 @@ while true
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
       if PullRequestsData.has_outdated_success_status(pull_request)
-        Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been scheduled for retesting as the '#{pull_request[:base_branch]}' branch has been updated."})
+        Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been rescheduled for testing as the '#{pull_request[:base_branch]}' branch has been updated."})
       end
       PullRequestsData.update(pull_request)
     end
