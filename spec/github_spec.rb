@@ -239,8 +239,7 @@ describe Github do
 
     context 'when the specified state has a status that is neither success or failure' do
       it 'does not tell PullRequestsData to update priority or update is_test_required' do
-        PullRequestsData.should_not_receive(:update_priority)
-        PullRequestsData.should_not_receive(:update_is_test_required)
+        PullRequestsData.should_not_receive(:reset)
 
         Github.set_pull_request_status(pull_request_id, undefined_state)
       end
@@ -248,8 +247,7 @@ describe Github do
 
     context 'when the specified state has a status of success' do
       it 'tells PullRequestsData to update priority and update is_test_required' do
-        PullRequestsData.should_receive(:update_priority).with(pull_request_id, 0)
-        PullRequestsData.should_receive(:update_is_test_required).with(pull_request_id, false)
+        PullRequestsData.should_receive(:reset).with(pull_request_id)
 
         Github.set_pull_request_status(pull_request_id, success_state)
       end
@@ -257,8 +255,7 @@ describe Github do
 
     context 'when the specified state has a status of failure' do
       it 'tells PullRequestsData to update priority and update is_test_required' do
-        PullRequestsData.should_receive(:update_priority).with(pull_request_id, 0)
-        PullRequestsData.should_receive(:update_is_test_required).with(pull_request_id, false)
+        PullRequestsData.should_receive(:reset).with(pull_request_id)
 
         Github.set_pull_request_status(pull_request_id, failed_state)
       end

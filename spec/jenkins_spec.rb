@@ -69,6 +69,7 @@ describe Jenkins do
   end
 
   describe '.start_job' do
+    let(:pull_request_id) { 123 }
     let(:jenkins_job_name) { 'job_name' }
     let(:testing_branch_name) { 'branch_name' }
     let(:github_ssh_repository) { 'respository' }
@@ -79,24 +80,24 @@ describe Jenkins do
                           :github_ssh_repository => github_ssh_repository } }
 
     let(:api_url) { "#{jenkins_url}/job/#{jenkins_job_name}/buildWithParameters" }
-    let(:job_id) { 123456 }
+    let(:job_id) { "#{:pull_request_id}-123456" }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
-      Jenkins.stub(:new_job_id).and_return(job_id)
+      Jenkins.stub(:new_job_id).with(:pull_request_id).and_return(job_id)
       stub_request(:post, /\A#{api_url}.*/).to_return(:status => 200, :headers => {})
     end
 
     it 'generates and returns a new job id' do
-      Jenkins.should_receive(:new_job_id).and_return(job_id)
+      Jenkins.should_receive(:new_job_id).with(:pull_request_id).and_return(job_id)
 
-      Jenkins.start_job.should eql job_id
+      Jenkins.start_job(:pull_request_id).should eql job_id
     end
 
     it 'posts to jenkins build job action with params: job name and git repo from config and generated job id' do
       expected_params = {:branch => testing_branch_name, :repository => github_ssh_repository, :id => job_id.to_s}
 
-      Jenkins.start_job
+      Jenkins.start_job(:pull_request_id)
 
       WebMock.should have_requested(:post, /\A#{api_url}.*/).with( :query => hash_including(expected_params) )
     end
@@ -109,7 +110,7 @@ describe Jenkins do
       it 'sends a request with basic auth credentials' do
         config_data.merge!(:jenkins_login => jenkins_login, :jenkins_password => jenkins_password)
 
-        Jenkins.start_job
+        Jenkins.start_job(:pull_request_id)
 
         WebMock.should have_requested(:post, /\A#{api_url}.*/)
       end
@@ -126,13 +127,13 @@ describe Jenkins do
       it 'logs the failure' do
         Logger.should_receive(:log).with(/Error.*starting job.*/, request_error)
 
-        Jenkins.start_job
+        Jenkins.start_job(:pull_request_id)
       end
 
       it 'retries the request after a 5 second delay' do
         Jenkins.should_receive(:sleep).with(5)
 
-        Jenkins.start_job
+        Jenkins.start_job(:pull_request_id)
 
         WebMock.should have_requested(:post, /\A#{api_url}.*/).twice
       end
