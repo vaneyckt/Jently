@@ -1,6 +1,6 @@
 module ConfigFile
   def ConfigFile.get_path
-    "#{Dir.pwd}/config/config.yaml"
+    "#{Dir.pwd}/config/config.yaml.erb"
   end
 
   def ConfigFile.read
