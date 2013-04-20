@@ -1,6 +1,7 @@
 require 'faraday'
 require 'faraday_middleware'
-require './lib/helpers.rb'
+require './lib/helpers/logger'
+require './lib/helpers/config_file'
 
 module Jenkins
   def Jenkins.wait_for_idle_executor

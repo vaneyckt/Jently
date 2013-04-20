@@ -1,7 +1,10 @@
 require './lib/git.rb'
 require './lib/github.rb'
 require './lib/jenkins.rb'
-require './lib/helpers.rb'
+require './lib/helpers/logger'
+require './lib/helpers/config_file'
+require './lib/helpers/repository'
+require './lib/helpers/pull_requests_data'
 
 def test_pull_request(pull_request_id)
   begin
