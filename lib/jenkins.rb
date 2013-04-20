@@ -33,12 +33,6 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
-      # I don't like adding exceptions like this into the application code, but if I don't, test failures just get
-      # eaten up by the rescue, and the re-try keeps execution stuck in a loop.
-      # Maybe a better approach would be to introduce the Rails idea of environments, and limit the re-try behaviour
-      # to non-test environment
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when getting nb of idle executors', e)
       sleep 5
       retry
@@ -70,8 +64,6 @@ module Jenkins
       end
       job_id
     rescue => e
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when starting job', e)
       sleep 5
       retry
@@ -120,8 +112,6 @@ module Jenkins
       end
       state
     rescue => e
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when getting job state', e)
       sleep 5
       retry
