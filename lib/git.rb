@@ -1,5 +1,7 @@
 require 'systemu'
-require './lib/helpers.rb'
+require './lib/helpers/logger'
+require './lib/helpers/config_file'
+require './lib/helpers/repository'
 
 module Git
   def Git.clone_repository
@@ -10,7 +12,7 @@ module Git
       cd #{repository_dir} &&
       git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
     GIT
-    puts 'Cloning repository ...'
+    Logger.log("Started cloning repository ...")
     status, stdout, stderr = systemu(cmd)
     Logger.log("Cloning repository - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
@@ -51,11 +53,9 @@ module Git
       git reset --hard &&
       git clean -df &&
       git fetch --all &&
-      git checkout #{pull_request[:head_branch]} &&
-      git reset --hard origin/#{pull_request[:head_branch]} &&
-      git clean -df &&
+      git checkout #{pull_request[:head_sha]} &&
       git checkout -b #{config[:testing_branch_name]} &&
-      git pull origin #{pull_request[:base_branch]}
+      git merge #{pull_request[:base_sha]}
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")

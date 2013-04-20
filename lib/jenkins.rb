@@ -1,12 +1,13 @@
 require 'faraday'
 require 'faraday_middleware'
-require './lib/helpers.rb'
+require './lib/helpers/logger'
+require './lib/helpers/config_file'
 
 module Jenkins
   def Jenkins.wait_for_idle_executor
     config = ConfigFile.read
     while true
-      return if Jenkins.get_nb_of_idle_executors >= 1
+      return if get_nb_of_idle_executors >= 1
       sleep config[:jenkins_polling_interval_seconds]
     end
   end
@@ -38,7 +39,11 @@ module Jenkins
     end
   end
 
-  def Jenkins.start_job
+  def Jenkins.new_job_id(pull_request_id)
+    "#{pull_request_id}-#{(Time.now.to_f * 1000000).to_i}"
+  end
+
+  def Jenkins.start_job(pull_request_id)
     begin
       config = ConfigFile.read
       connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
@@ -51,7 +56,7 @@ module Jenkins
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
-      job_id = (Time.now.to_f * 1000000).to_i.to_s
+      job_id = new_job_id(pull_request_id)
       connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
@@ -68,7 +73,7 @@ module Jenkins
   def Jenkins.wait_on_job(job_id)
     config = ConfigFile.read
     while true
-      state = Jenkins.get_job_state(job_id)
+      state = get_job_state(job_id)
       return state if !state.nil?
       sleep config[:jenkins_polling_interval_seconds]
     end
