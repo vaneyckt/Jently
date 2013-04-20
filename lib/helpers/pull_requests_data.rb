@@ -1,3 +1,5 @@
+require 'yaml'
+
 module PullRequestsData
   def PullRequestsData.get_path
     "#{Dir.pwd}/db/pull_requests.yaml"
