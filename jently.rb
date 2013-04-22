@@ -35,7 +35,7 @@ def test_pull_request(pull_request_id)
       Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'Job timed out.'}) if timeout
     end
   rescue => e
-    Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'An error has occurred. This pull request will be automatically retested.'})
+    Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'})
     Logger.log('Error when testing pull request', e)
   end
 end
