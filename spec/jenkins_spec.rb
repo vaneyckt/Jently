@@ -98,7 +98,7 @@ describe Jenkins do
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
-      Jenkins.stub(:new_job_id).with(:pull_request_id).and_return(job_id)
+      Jenkins.stub(:new_job_id).and_return(job_id)
       stub_request(:post, /\A#{api_url}.*/).to_return(:status => 200, :headers => {})
     end
 

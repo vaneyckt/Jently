@@ -45,6 +45,13 @@ module Git
     Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
+  # Assume a pull request that wants to merge sha_A of branch_A into sha_B of branch_B.
+  # The git commands can then be explained as:
+  # - checkout sha_A. if sha_A is not the head of branch_A, then you'll end up in a headless state.
+  # - make a new branch by branching of sha_A. This will give you a new branch irregardless of the state you were in before.
+  # - merge sha_b into this newly created branch.
+  # Your branch now contains the same code as would have been created by merging the pull request.
+  # We can now run our tests on this branch in order to determine whether merging the pull request will break any tests.
   def Git.create_local_testing_branch(pull_request)
     config = ConfigFile.read
     repository_path = Repository.get_path
@@ -73,5 +80,13 @@ module Git
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Pushing local testing branch to remote - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+  end
+
+  def Git.setup_testing_branch(pull_request)
+    Git.clone_repository if !Repository.exists_locally
+    Git.delete_local_testing_branch
+    Git.delete_remote_testing_branch
+    Git.create_local_testing_branch(pull_request)
+    Git.push_local_testing_branch_to_remote
   end
 end

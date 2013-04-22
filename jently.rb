@@ -16,11 +16,7 @@ def test_pull_request(pull_request_id)
     end
 
     if pull_request[:mergeable] == true
-      Git.clone_repository if !Repository.exists_locally
-      Git.delete_local_testing_branch
-      Git.delete_remote_testing_branch
-      Git.create_local_testing_branch(pull_request)
-      Git.push_local_testing_branch_to_remote
+      Git.setup_testing_branch(pull_request)
 
       Jenkins.wait_for_idle_executor
 
