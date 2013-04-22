@@ -17,7 +17,6 @@ def test_pull_request(pull_request_id)
 
     if pull_request[:mergeable] == true
       Git.setup_testing_branch(pull_request)
-
       Jenkins.wait_for_idle_executor
 
       thr = Thread.new do
