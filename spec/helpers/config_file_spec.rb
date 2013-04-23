@@ -45,7 +45,6 @@ describe ConfigFile do
         File.open(config_path, 'w'){|file| file.write( "---\nfoo: <%= 'baz' %>\n" ) }
         ConfigFile.read['foo'].should eql 'baz'
       end
-
     end
   end
 end

@@ -1,5 +1,4 @@
 module Logger
-
   def Logger.get_path
     "#{Dir.pwd}/log"
   end
@@ -12,5 +11,4 @@ module Logger
   def self.log_prefix
     "#{Time.now} (#{Time.now.to_i})\n======================================\n"
   end
-
 end

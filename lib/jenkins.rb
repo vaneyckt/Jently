@@ -1,12 +1,13 @@
 require 'faraday'
 require 'faraday_middleware'
-require './lib/helpers.rb'
+require './lib/helpers/logger'
+require './lib/helpers/config_file'
 
 module Jenkins
   def Jenkins.wait_for_idle_executor
     config = ConfigFile.read
     while true
-      return if Jenkins.get_nb_of_idle_executors >= 1
+      return if get_nb_of_idle_executors >= 1
       sleep config[:jenkins_polling_interval_seconds]
     end
   end
@@ -32,23 +33,17 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
-      # I don't like adding exceptions like this into the application code, but if I don't, test failures just get
-      # eaten up by the rescue, and the re-try keeps execution stuck in a loop.
-      # Maybe a better approach would be to introduce the Rails idea of environments, and limit the re-try behaviour
-      # to non-test environment
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when getting nb of idle executors', e)
       sleep 5
       retry
     end
   end
 
-  def Jenkins.new_job_id
-    (Time.now.to_f * 1000000).to_i.to_s
+  def Jenkins.new_job_id(pull_request_id)
+    "#{pull_request_id}-#{(Time.now.to_f * 1000000).to_i}"
   end
 
-  def Jenkins.start_job
+  def Jenkins.start_job(pull_request_id)
     begin
       config = ConfigFile.read
       connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
@@ -61,7 +56,7 @@ module Jenkins
         connection.basic_auth config[:jenkins_login], config[:jenkins_password]
       end
 
-      job_id = new_job_id
+      job_id = new_job_id(pull_request_id)
       connection.post do |req|
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
@@ -69,8 +64,6 @@ module Jenkins
       end
       job_id
     rescue => e
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when starting job', e)
       sleep 5
       retry
@@ -80,7 +73,7 @@ module Jenkins
   def Jenkins.wait_on_job(job_id)
     config = ConfigFile.read
     while true
-      state = Jenkins.get_job_state(job_id)
+      state = get_job_state(job_id)
       return state if !state.nil?
       sleep config[:jenkins_polling_interval_seconds]
     end
@@ -119,8 +112,6 @@ module Jenkins
       end
       state
     rescue => e
-      raise(e) if e.class.to_s =~ /\AWebMock::/
-
       Logger.log('Error when getting job state', e)
       sleep 5
       retry
