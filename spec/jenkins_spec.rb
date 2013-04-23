@@ -94,7 +94,7 @@ describe Jenkins do
                           :github_ssh_repository => github_ssh_repository } }
 
     let(:api_url) { "#{jenkins_url}/job/#{jenkins_job_name}/buildWithParameters" }
-    let(:job_id) { "#{:pull_request_id}-123456" }
+    let(:job_id) { "#{pull_request_id}-123456" }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
@@ -104,8 +104,8 @@ describe Jenkins do
 
     it 'generates and returns a new job id' do
       thr = Thread.new do
-        Jenkins.should_receive(:new_job_id).with(:pull_request_id).and_return(job_id)
-        Jenkins.start_job(:pull_request_id).should eql job_id
+        Jenkins.should_receive(:new_job_id).with(pull_request_id).and_return(job_id)
+        Jenkins.start_job(pull_request_id).should eql job_id
       end
 
       thr.join(5).should_not be_nil
