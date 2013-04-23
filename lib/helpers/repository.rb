@@ -1,3 +1,5 @@
+require './lib/helpers/config_file'
+
 module Repository
   def Repository.get_id
     config = ConfigFile.read

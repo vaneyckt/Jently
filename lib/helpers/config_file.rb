@@ -1,6 +1,10 @@
+require 'erb'
+require 'yaml'
+require './lib/helpers/logger'
+
 module ConfigFile
   def ConfigFile.get_path
-    "#{Dir.pwd}/config/config.yaml"
+    "#{Dir.pwd}/config/config.yaml.erb"
   end
 
   def ConfigFile.read
@@ -10,7 +14,7 @@ module ConfigFile
       erbified_data = ERB.new(raw_data).result
       YAML.load(erbified_data) || {}
     else
-      Logger.log("Config file unavailable -- no log file found in #{ConfigFile.get_path}")
+      Logger.log("Config file unavailable -- no log file found in #{get_path}")
     end
   end
 end

@@ -53,5 +53,4 @@ describe Repository do
       Repository.exists_locally.should be_false
     end
   end
-
 end
