@@ -81,7 +81,7 @@ describe PullRequestsData do
 
     before do
       PullRequestsData.stub(:get_new_priority).and_return(new_priority)
-      PullRequestsData.stub(:is_test_required).and_return(new_test_required)
+      PullRequestsData.stub(:test_required?).and_return(new_test_required)
       PullRequestsData.write( { pull_request_id => old_data} )
     end
 
@@ -103,8 +103,8 @@ describe PullRequestsData do
     end
 
     it 'finds and stores whether a test is required for the specified pull request' do
-      PullRequestsData.should_receive(:is_test_required).with( hash_including(new_data) )
-                                                        .and_return(new_test_required)
+      PullRequestsData.should_receive(:test_required?).with( hash_including(new_data) )
+                                                      .and_return(new_test_required)
 
       PullRequestsData.update( new_data )
 
@@ -167,11 +167,11 @@ describe PullRequestsData do
   end
 
 
-  describe '.has_outdated_success_status' do
+  describe '.outdated_success_status?' do
     let(:id) { 12345 }
 
     it 'is false if pull request is new' do
-      PullRequestsData.has_outdated_success_status({:id => id}).should be_false
+      PullRequestsData.outdated_success_status?({:id => id}).should be_false
     end
 
     let(:stored_sha) { 'abc123' }
@@ -183,20 +183,20 @@ describe PullRequestsData do
       end
 
       it 'is false if the specified pull request is not successful' do
-        PullRequestsData.has_outdated_success_status({:id => id, :status => 'failed'}).should be_false
+        PullRequestsData.outdated_success_status?({:id => id, :status => 'failed'}).should be_false
       end
 
       it 'is false if the stored pull request is not successful' do
         PullRequestsData.write(id => stored_pr.merge(:status => 'failed'))
-        PullRequestsData.has_outdated_success_status(stored_pr).should be_false
+        PullRequestsData.outdated_success_status?(stored_pr).should be_false
       end
 
       it 'is false if the stored pull request sha is the same as the specified sha' do
-        PullRequestsData.has_outdated_success_status(stored_pr).should be_false
+        PullRequestsData.outdated_success_status?(stored_pr).should be_false
       end
 
       it 'is true if both the stored and specified pull requests are successful but have different shas' do
-        PullRequestsData.has_outdated_success_status(stored_pr.merge(:base_sha => 'other_sha')).should be_true
+        PullRequestsData.outdated_success_status?(stored_pr.merge(:base_sha => 'other_sha')).should be_true
       end
     end
   end
@@ -219,47 +219,47 @@ describe PullRequestsData do
   end
 
 
-  describe '.is_test_required' do
+  describe '.test_required?' do
     let(:id) { 789 }
 
     it 'is false if the pull request is merged' do
-      PullRequestsData.is_test_required({:id => id, :merged => true}).should be_false
+      PullRequestsData.test_required?({:id => id, :merged => true}).should be_false
     end
 
     context 'when the pull request is not merged' do
       it 'is true if the pull request is new' do
-        PullRequestsData.is_test_required({:id => id, :merged => false}).should be_true
+        PullRequestsData.test_required?({:id => id, :merged => false}).should be_true
       end
 
       context 'when the pr is not new' do
         it 'is true if the stored pull request is flagged as requiring testing' do
           PullRequestsData.write( id => {:id => id, :is_test_required => true} )
 
-          PullRequestsData.is_test_required({:id => id, :merged => false}).should be_true
+          PullRequestsData.test_required?({:id => id, :merged => false}).should be_true
         end
 
         it 'is true if the stored pr has a different status than the specified pr' do
           PullRequestsData.write( id => {:id => id, :status => 'one_thing'} )
 
-          PullRequestsData.is_test_required({:id => id, :merged => false, :status => 'other_thing'}).should be_true
+          PullRequestsData.test_required?({:id => id, :merged => false, :status => 'other_thing'}).should be_true
         end
 
         it 'is true if the specified pr has an status of error' do
           PullRequestsData.write( id => {:id => id, :status => 'error'} )
 
-          PullRequestsData.is_test_required({:id => id, :merged => false, :status => 'error'}).should be_true
+          PullRequestsData.test_required?({:id => id, :merged => false, :status => 'error'}).should be_true
         end
 
         it 'is true if the specified pr has an status of pending' do
           PullRequestsData.write( id => {:id => id, :status => 'pending'} )
 
-          PullRequestsData.is_test_required({:id => id, :merged => false, :status => 'pending'}).should be_true
+          PullRequestsData.test_required?({:id => id, :merged => false, :status => 'pending'}).should be_true
         end
 
         it 'is true if the specified pr has an status of undefined' do
           PullRequestsData.write( id => {:id => id, :status => 'undefined'} )
 
-          PullRequestsData.is_test_required({:id => id, :merged => false, :status => 'undefined'}).should be_true
+          PullRequestsData.test_required?({:id => id, :merged => false, :status => 'undefined'}).should be_true
         end
 
         context 'when the specified pr has a status of success' do
@@ -273,15 +273,15 @@ describe PullRequestsData do
           end
 
           it 'is true if the stored pr and specified pr have different a head sha' do
-            PullRequestsData.is_test_required( stored_pr.merge(:head_sha => 'othersha') ).should be_true
+            PullRequestsData.test_required?( stored_pr.merge(:head_sha => 'othersha') ).should be_true
           end
 
           it 'is true if the stored pr and specified pr have different a base sha' do
-            PullRequestsData.is_test_required( stored_pr.merge(:base_sha => 'othersha') ).should be_true
+            PullRequestsData.test_required?( stored_pr.merge(:base_sha => 'othersha') ).should be_true
           end
 
           it 'is false if the stored pr and specified pr have the same head and base sha' do
-            PullRequestsData.is_test_required( stored_pr ).should be_false
+            PullRequestsData.test_required?( stored_pr ).should be_false
           end
         end
 
@@ -296,15 +296,15 @@ describe PullRequestsData do
           end
 
           it 'is true if the stored pr and specified pr have different a head sha' do
-            PullRequestsData.is_test_required( stored_pr.merge(:head_sha => 'othersha') ).should be_true
+            PullRequestsData.test_required?( stored_pr.merge(:head_sha => 'othersha') ).should be_true
           end
 
           it 'is true if the stored pr and specified pr have different a base sha' do
-            PullRequestsData.is_test_required( stored_pr.merge(:base_sha => 'othersha') ).should be_true
+            PullRequestsData.test_required?( stored_pr.merge(:base_sha => 'othersha') ).should be_true
           end
 
           it 'is false if the stored pr and specified pr have the same head and base sha' do
-            PullRequestsData.is_test_required( stored_pr ).should be_false
+            PullRequestsData.test_required?( stored_pr ).should be_false
           end
         end
       end

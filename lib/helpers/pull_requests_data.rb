@@ -20,7 +20,7 @@ module PullRequestsData
     data = read
     data[pull_request[:id]] = pull_request
     data[pull_request[:id]][:priority] = get_new_priority(pull_request)
-    data[pull_request[:id]][:is_test_required] = is_test_required(pull_request)
+    data[pull_request[:id]][:is_test_required] = test_required?(pull_request)
     write(data)
   end
 
@@ -44,7 +44,7 @@ module PullRequestsData
     write(data)
   end
 
-  def PullRequestsData.has_outdated_success_status(pull_request)
+  def PullRequestsData.outdated_success_status?(pull_request)
     stored_data = data_for(pull_request)
     stored_data && pull_request[:status] == 'success' &&
       stored_data[:status] == 'success' &&
@@ -61,7 +61,7 @@ module PullRequestsData
     data.has_key?(pull_request[:id]) && data[pull_request[:id]]
   end
 
-  def PullRequestsData.is_test_required(pull_request)
+  def PullRequestsData.test_required?(pull_request)
     return false if pull_request[:merged] # no need to load up and process stored data in this case
 
     stored_data = data_for(pull_request)
