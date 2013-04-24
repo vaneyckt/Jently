@@ -16,4 +16,15 @@ module ConfigFile
       Logger.log("Config file unavailable -- no log file found in #{get_path}")
     end
   end
+
+  def ConfigFile.whitelist_branches
+    branches = read[:whitelist_branches]
+    if branches
+      if branches.is_a?(String) && branches.size > 0
+        [branches]
+      elsif branches.is_a?(Array) && !branches.compact.empty?
+        branches
+      end
+    end
+  end
 end

@@ -47,4 +47,49 @@ describe ConfigFile do
       end
     end
   end
+
+  describe '.whitelist_branches' do
+    let(:config_path) { File.join('rspec_config.yaml') }
+    let(:branch_1) { 'branch_1' }
+    let(:branch_2) { 'branch_2' }
+
+    before do
+      ConfigFile.stub(:get_path).and_return(config_path)
+      File.delete(config_path) if File.exists?(config_path)
+    end
+
+    after do
+      File.delete(config_path) if File.exists?(config_path)
+    end
+
+    it 'returns nil if no :whitelist_branches key is defined' do
+      File.open(config_path, 'w'){|file| file.write( "---\nfoo: baz\n" ) }
+
+      ConfigFile.whitelist_branches.should be_nil
+    end
+
+    it 'returns nil if :whitelist_branches value is an empty string' do
+      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n" ) }
+      
+      ConfigFile.whitelist_branches.should be_nil
+    end
+
+    it 'returns nil if :whitelist_branches value is an empty array' do
+      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  -\n" ) }
+
+      ConfigFile.whitelist_branches.should be_nil
+    end
+
+    it 'returns an array containing a single specified whitelist branch' do
+      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches: #{branch_1}\n" ) }
+
+      ConfigFile.whitelist_branches.should eql [ branch_1 ]
+    end
+
+    it 'returns an array of multiple specified whitelist branches' do
+      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n  - #{branch_2}\n" ) }
+
+      ConfigFile.whitelist_branches.should =~ [ branch_1, branch_2 ]
+    end
+  end
 end
