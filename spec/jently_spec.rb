@@ -73,7 +73,7 @@ describe Jently do
 
   describe '.test_pull_request' do
     let(:pull_request_id) { 1234 }
-    let(:jenkins_timeout) { 0.05 }
+    let(:jenkins_timeout) { 0.5 }
     let(:job_id) { 456789 }
     let(:pull_request) { { :id => pull_request_id, :mergeable => true } }
     let(:job_state) { { :status => 'success' } }
@@ -136,7 +136,7 @@ describe Jently do
       context 'when the Jenkins job takes less time than the jenkins_job_timeout_seconds value' do
         it 'does not tell Github to mark the pull request status as timed out' do
           Jenkins.stub(:wait_on_job) do |job|
-            sleep (jenkins_timeout - 0.01)
+            sleep (jenkins_timeout - 0.4)
             job_state
           end
           params = {:status => 'error', :description => 'Job timed out.'}
@@ -149,7 +149,7 @@ describe Jently do
       context 'when the Jenkins job takes longer than the jenkins_job_timeout_seconds value' do
         it 'tells Github to mark the pull request status as timed out' do
           Jenkins.stub(:wait_on_job) do |job|
-            sleep (jenkins_timeout + 0.001)
+            sleep (jenkins_timeout + 0.2)
             job_state
           end
           params = {:status => 'error', :description => 'Job timed out.'}
