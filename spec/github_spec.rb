@@ -187,8 +187,7 @@ describe Github do
       Octokit::Client.stub(:new).and_return(octokit_client)
       PullRequestsData.stub(:read).and_return(pull_requests_data)
       PullRequestsData.stub(:update_status)
-      PullRequestsData.stub(:update_priority)
-      PullRequestsData.stub(:update_is_test_required)
+      PullRequestsData.stub(:reset)
       octokit_client.stub(:create_status)
     end
 
