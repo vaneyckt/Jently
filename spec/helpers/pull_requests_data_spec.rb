@@ -93,8 +93,8 @@ describe PullRequestsData do
     end
 
     it 'finds and stores the new priority for the specified pull request' do
-      PullRequestsData.should_receive(:get_new_priority).with( hash_including(new_data) )
-                                                        .and_return(new_priority)
+      PullRequestsData.should_receive(:get_new_priority).with( hash_including(new_data) ).
+                        and_return(new_priority)
 
       PullRequestsData.update( new_data )
 
@@ -103,8 +103,8 @@ describe PullRequestsData do
     end
 
     it 'finds and stores whether a test is required for the specified pull request' do
-      PullRequestsData.should_receive(:test_required?).with( hash_including(new_data) )
-                                                      .and_return(new_test_required)
+      PullRequestsData.should_receive(:test_required?).with( hash_including(new_data) ).
+                        and_return(new_test_required)
 
       PullRequestsData.update( new_data )
 
