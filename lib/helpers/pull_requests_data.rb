@@ -79,8 +79,15 @@ module PullRequestsData
   end
 
   def PullRequestsData.get_pull_request_id_to_test
-    data = read
-    pull_requests_that_require_testing = data.values.select { |pull_request| pull_request[:is_test_required] }
-    pull_request_id_to_test = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request| pull_request[:priority] }[:id]
+    highest_priority_pr = pull_requests_that_require_testing.max_by{ |pull_request| pull_request[:priority] }
+    highest_priority_pr && highest_priority_pr[:id]
   end
+
+  def PullRequestsData.pull_requests_that_require_testing
+    whitelist = ConfigFile.whitelist_branches
+    read.values.select do | pull_request|
+      pull_request[:is_test_required] && ( !whitelist || whitelist.include?(pull_request[:base_branch]) )
+    end
+  end
+
 end
