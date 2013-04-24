@@ -9,6 +9,7 @@ describe Github do
 
   before do
     Github.stub(:sleep)
+    Logger.stub(:log)
     ConfigFile.stub(:read).and_return(config_data)
     Repository.stub(:get_id).and_return(repo_id)
   end
