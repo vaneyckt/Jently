@@ -15,17 +15,7 @@ module Jenkins
   def Jenkins.get_nb_of_idle_executors
     begin
       config = ConfigFile.read
-      connection = Faraday.new(:url => "#{config[:jenkins_url]}/api/json") do |c|
-        c.use Faraday::Request::UrlEncoded
-        c.use FaradayMiddleware::FollowRedirects
-        c.use FaradayMiddleware::Mashify
-        c.use FaradayMiddleware::ParseJson
-        c.use Faraday::Adapter::NetHttp
-      end
-
-      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
-        connection.basic_auth config[:jenkins_login], config[:jenkins_password]
-      end
+      connection = get_json_connection("#{config[:jenkins_url]}/api/json", config)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -82,17 +72,7 @@ module Jenkins
   def Jenkins.get_job_state(job_id)
     begin
       config = ConfigFile.read
-      connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json") do |c|
-        c.use Faraday::Request::UrlEncoded
-        c.use FaradayMiddleware::FollowRedirects
-        c.use FaradayMiddleware::Mashify
-        c.use FaradayMiddleware::ParseJson
-        c.use Faraday::Adapter::NetHttp
-      end
-
-      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
-        connection.basic_auth config[:jenkins_login], config[:jenkins_password]
-      end
+      connection = get_json_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json", config)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -116,5 +96,21 @@ module Jenkins
       sleep 5
       retry
     end
+  end
+
+  def self.get_json_connection(url, config)
+    connection = Faraday.new(:url => url) do |c|
+      c.use Faraday::Request::UrlEncoded
+      c.use FaradayMiddleware::FollowRedirects
+      c.use FaradayMiddleware::Mashify
+      c.use FaradayMiddleware::ParseJson
+      c.use Faraday::Adapter::NetHttp
+    end
+
+    if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
+      connection.basic_auth config[:jenkins_login], config[:jenkins_password]
+    end
+
+    connection
   end
 end
