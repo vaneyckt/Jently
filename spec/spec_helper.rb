@@ -4,9 +4,11 @@
 # loaded once.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
 require './lib/git.rb'
 require './lib/github.rb'
 require './lib/jenkins.rb'
+require './lib/jently.rb'
 require './lib/helpers/logger'
 require './lib/helpers/repository'
 require './lib/helpers/config_file'
