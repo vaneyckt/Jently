@@ -80,8 +80,8 @@ module PullRequestsData
   end
 
   def PullRequestsData.get_pull_request_id_to_test
-    data = read
-    pull_requests_that_require_testing = data.select { |pull_request_id, pull_request| pull_request[:is_test_required] }
-    (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request_id, pull_request| pull_request[:priority] }.first
+    pull_requests_that_require_testing = read.values.select{ |pull_request| pull_request[:is_test_required] }
+    highest_priority_pr = pull_requests_that_require_testing.max_by{ |pull_request| pull_request[:priority] }
+    highest_priority_pr && highest_priority_pr[:id]
   end
 end
