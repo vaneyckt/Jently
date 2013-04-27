@@ -45,43 +45,44 @@ module PullRequestsData
   end
 
   def PullRequestsData.outdated_success_status?(pull_request)
-    stored_data = data_for(pull_request)
-    stored_data && pull_request[:status] == 'success' &&
-      stored_data[:status] == 'success' &&
-      stored_data[:base_sha] != pull_request[:base_sha]
+    data = read
+    is_new = !data.has_key?(pull_request[:id])
+
+    has_outdated_success_status = true
+    has_outdated_success_status = has_outdated_success_status && !is_new
+    has_outdated_success_status = has_outdated_success_status && pull_request[:status] == 'success'
+    has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:status] == 'success'
+    has_outdated_success_status = has_outdated_success_status && data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
   end
 
   def PullRequestsData.get_new_priority(pull_request)
-    stored_data = data_for(pull_request)
-    (stored_data && stored_data[:priority] + 1) || 0
-  end
-
-  def PullRequestsData.data_for(pull_request)
     data = read
-    data.has_key?(pull_request[:id]) && data[pull_request[:id]]
+    is_new = !data.has_key?(pull_request[:id])
+    priority = (is_new) ? 0 : (data[pull_request[:id]][:priority] + 1)
   end
 
   def PullRequestsData.test_required?(pull_request)
-    return false if pull_request[:merged] # no need to load up and process stored data in this case
+    return false if pull_request[:merged]
 
-    stored_data = data_for(pull_request)
+    data = read
+    is_new = !data.has_key?(pull_request[:id])
 
-    is_waiting_to_be_tested = stored_data && stored_data[:is_test_required]
-    has_inconsistent_status = stored_data && (stored_data[:status] != pull_request[:status])
+    is_waiting_to_be_tested = (is_new) ? false : data[pull_request[:id]][:is_test_required]
+    has_inconsistent_status = (is_new) ? false : data[pull_request[:id]][:status] != pull_request[:status]
 
-    has_invalid_status = %w(error pending undefined).include? pull_request[:status]
+    has_invalid_status = ['error', 'pending', 'undefined'].include?(pull_request[:status])
+    has_valid_status = ['success', 'failure'].include?(pull_request[:status])
 
-    has_valid_status = %w(success failure).include? pull_request[:status]
-    was_updated = stored_data && ( (stored_data[:head_sha] != pull_request[:head_sha]) ||
-                                   (stored_data[:base_sha] != pull_request[:base_sha]) )
+    was_updated = false
+    was_updated = (is_new) ? false : (was_updated || data[pull_request[:id]][:head_sha] != pull_request[:head_sha])
+    was_updated = (is_new) ? false : (was_updated || data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
 
-    !stored_data || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status ||
-      (has_valid_status && was_updated )
+    is_test_required = is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated)
   end
 
   def PullRequestsData.get_pull_request_id_to_test
-    pull_requests_that_require_testing = read.values.select{ |pull_request| pull_request[:is_test_required] }
-    highest_priority_pr = pull_requests_that_require_testing.max_by{ |pull_request| pull_request[:priority] }
-    highest_priority_pr && highest_priority_pr[:id]
+    data = read
+    pull_requests_that_require_testing = data.values.select { |pull_request| pull_request[:is_test_required] }
+    pull_request_id_to_test = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request| pull_request[:priority] }[:id]
   end
 end
