@@ -31,7 +31,7 @@ describe Repository do
     end
   end
 
-  describe '.exists_locally' do
+  describe '.exists_locally?' do
     before do
       Repository.stub(:get_id).and_return(repo_id)
 
@@ -46,11 +46,11 @@ describe Repository do
 
     it 'is true when the local repo dir exists' do
       FileUtils.makedirs( Repository.get_path )
-      Repository.exists_locally.should be_true
+      Repository.exists_locally?.should be_true
     end
 
     it 'is false when the local repo dir does not exist' do
-      Repository.exists_locally.should be_false
+      Repository.exists_locally?.should be_false
     end
   end
 end

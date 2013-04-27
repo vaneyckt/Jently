@@ -54,7 +54,7 @@ module Git
   end
 
   def Git.setup_testing_branch(pull_request)
-    Git.clone_repository if !Repository.exists_locally
+    Git.clone_repository if !Repository.exists_locally?
     Git.delete_testing_branch
     Git.create_testing_branch(pull_request)
   end

@@ -27,20 +27,20 @@ describe Git do
 
   describe '.setup_testing_branch' do
     before do
-      Repository.stub(:exists_locally).and_return(true)
+      Repository.stub(:exists_locally?).and_return(true)
       Git.stub(:delete_testing_branch)
       Git.stub(:create_testing_branch)
     end
 
     it 'does not clone the repository when it exists locally' do
-      Repository.stub(:exists_locally).and_return(true)
+      Repository.stub(:exists_locally?).and_return(true)
       Git.should_not_receive(:clone_repository)
 
       Git.setup_testing_branch(pull_request)
     end
 
     it 'clones the repository when it does not exist locally' do
-      Repository.stub(:exists_locally).and_return(false)
+      Repository.stub(:exists_locally?).and_return(false)
       Git.should_receive(:clone_repository)
 
       Git.setup_testing_branch(pull_request)
