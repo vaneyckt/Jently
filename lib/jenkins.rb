@@ -89,7 +89,7 @@ module Jenkins
     end
   end
 
-  def self.new_connection(url, config, use_json = true)
+  def Jenkins.new_connection(url, config, use_json = true)
     connection = Faraday.new(:url => url) do |c|
       c.use Faraday::Request::UrlEncoded
       c.use FaradayMiddleware::FollowRedirects

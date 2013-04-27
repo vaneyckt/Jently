@@ -56,7 +56,7 @@ module PullRequestsData
     (stored_data && stored_data[:priority] + 1) || 0
   end
 
-  def self.data_for(pull_request)
+  def PullRequestsData.data_for(pull_request)
     data = read
     data.has_key?(pull_request[:id]) && data[pull_request[:id]]
   end
