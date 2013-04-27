@@ -37,7 +37,6 @@ describe PullRequestsData do
     end
   end
 
-
   describe '.write' do
     let(:data_hash) { {'a' => 'b'} }
 
@@ -64,7 +63,6 @@ describe PullRequestsData do
       result['a'].should eql 'b'
     end
   end
-
 
   describe '.update' do
     let(:pull_request_id) { 'abc123' }
@@ -113,7 +111,6 @@ describe PullRequestsData do
     end
   end
 
-
   describe '.remove_dead_pull_requests' do
     it 'deletes pull requests that are not in the specified list of open pull request ids' do
       dead_pr_id = 123
@@ -128,7 +125,6 @@ describe PullRequestsData do
       result[open_pr_id].should eql open_pr
     end
   end
-
 
   describe '.update_status' do
     it 'sets the status of the specified pr id to the specified status' do
@@ -145,7 +141,6 @@ describe PullRequestsData do
       result[other_pr_id][:status].should eql 'old'
     end
   end
-
 
   describe '.reset' do
     it 'sets priority to -1 and test required to false for the specified pull request ' do
@@ -165,7 +160,6 @@ describe PullRequestsData do
       result[other_pr_id][:is_test_required].should be_true
     end
   end
-
 
   describe '.outdated_success_status?' do
     let(:id) { 12345 }
@@ -201,7 +195,6 @@ describe PullRequestsData do
     end
   end
 
-
   describe '.get_new_priority' do
     let(:id) { 456 }
     let(:old_priority) { 6 }
@@ -217,7 +210,6 @@ describe PullRequestsData do
       PullRequestsData.get_new_priority(pr).should eql (old_priority + 1)
     end
   end
-
 
   describe '.test_required?' do
     let(:id) { 789 }
@@ -311,7 +303,6 @@ describe PullRequestsData do
     end
   end
 
-
   describe '.get_pull_request_id_to_test' do
     let(:not_required_id) { 123 }
     let(:not_required_pr) { { :id => not_required_id, :is_test_required => false } }
@@ -353,6 +344,4 @@ describe PullRequestsData do
       end
     end
   end
-
 end
-
