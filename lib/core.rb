@@ -41,6 +41,6 @@ module Core
     end
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
-    Core.test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
+    test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
   end
 end
