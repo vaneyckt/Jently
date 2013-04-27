@@ -14,7 +14,9 @@ module Git
     Logger.log("Cloning repository - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
-  def Git.delete_testing_branch(repository_path, branch_name)
+  def Git.delete_testing_branch
+    repository_path = Repository.get_path
+    branch_name = ConfigFile.read[:testing_branch_name]
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
@@ -34,7 +36,9 @@ module Git
   # - merge sha_b into this newly created branch.
   # Your branch now contains the same code as would have been created by merging the pull request.
   # We can now run our tests on this branch in order to determine whether merging the pull request will break any tests.
-  def Git.create_testing_branch(pull_request, repository_path, branch_name)
+  def Git.create_testing_branch(pull_request)
+    repository_path = Repository.get_path
+    branch_name = ConfigFile.read[:testing_branch_name]
     cmd = <<-GIT
       cd #{repository_path} &&
       git reset --hard &&
@@ -50,11 +54,8 @@ module Git
   end
 
   def Git.setup_testing_branch(pull_request)
-    branch_name = ConfigFile.read[:testing_branch_name]
-    repository_path = Repository.get_path
-
     Git.clone_repository if !Repository.exists_locally
-    Git.delete_testing_branch(repository_path, branch_name)
-    Git.create_testing_branch(pull_request, repository_path, branch_name)
+    Git.delete_testing_branch
+    Git.create_testing_branch(pull_request)
   end
 end

@@ -47,13 +47,13 @@ describe Git do
     end
 
     it 'deletes the existing testing branch' do
-      Git.should_receive(:delete_testing_branch).with(repo_path, branch_name)
+      Git.should_receive(:delete_testing_branch)
 
       Git.setup_testing_branch(pull_request)
     end
 
     it 'creates a new testing branch' do
-      Git.should_receive(:create_testing_branch).with(pull_request, repo_path, branch_name)
+      Git.should_receive(:create_testing_branch).with(pull_request)
 
       Git.setup_testing_branch(pull_request)
     end
@@ -63,7 +63,7 @@ describe Git do
     it 'calls git commands that delete the testing branch' do
       Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git branch -D #{branch_name}.*git push origin :#{branch_name}/m).and_return(system_results)
 
-      Git.delete_testing_branch(repo_path, branch_name)
+      Git.delete_testing_branch
     end
   end
 
@@ -71,25 +71,25 @@ describe Git do
     it 'checks out the head sha of the pull request' do
       Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git checkout #{head_sha}/m).and_return(system_results)
 
-      Git.create_testing_branch(pull_request, repo_path, branch_name)
+      Git.create_testing_branch(pull_request)
     end
 
     it 'creates a branch with the testing branch name' do
       Git.should_receive(:systemu).with(/git checkout -b #{branch_name}/m).and_return(system_results)
 
-      Git.create_testing_branch(pull_request, repo_path, branch_name)
+      Git.create_testing_branch(pull_request)
     end
 
     it 'merges the base branch up into the testing branch' do
       Git.should_receive(:systemu).with(/git merge #{base_sha}/m).and_return(system_results)
 
-      Git.create_testing_branch(pull_request, repo_path, branch_name)
+      Git.create_testing_branch(pull_request)
     end
 
     it 'pushes the merged branch up to the origin' do
       Git.should_receive(:systemu).with(/git push origin #{branch_name}/m).and_return(system_results)
 
-      Git.create_testing_branch(pull_request, repo_path, branch_name)
+      Git.create_testing_branch(pull_request)
     end
   end
 end
