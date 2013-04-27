@@ -1,7 +1,4 @@
 require 'systemu'
-require './lib/helpers/logger'
-require './lib/helpers/repository'
-require './lib/helpers/config_file'
 
 module Git
   def Git.clone_repository
