@@ -8,7 +8,7 @@ module Logger
     File.open(get_path, 'a') { |file| file << log_prefix + message + exception_output.to_s + " \n\n" }
   end
 
-  def self.log_prefix
+  def Logger.log_prefix
     "#{Time.now} (#{Time.now.to_i})\n======================================\n"
   end
 end

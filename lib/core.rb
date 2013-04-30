@@ -1,5 +1,5 @@
-module Jently
-  def self.test_pull_request(pull_request_id)
+module Core
+  def Core.test_pull_request(pull_request_id)
     begin
       config = ConfigFile.read
       pull_request = PullRequestsData.read[pull_request_id]
@@ -28,7 +28,7 @@ module Jently
     end
   end
 
-  def self.poll_pull_requests_and_queue_next_job
+  def Core.poll_pull_requests_and_queue_next_job
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
@@ -41,6 +41,6 @@ module Jently
     end
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
-    Jently.test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
+    test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
   end
 end
