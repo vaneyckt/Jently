@@ -1,8 +1,4 @@
 require 'octokit'
-require './lib/helpers/logger'
-require './lib/helpers/repository'
-require './lib/helpers/config_file'
-require './lib/helpers/pull_requests_data'
 
 module Github
   def Github.get_open_pull_requests_ids
