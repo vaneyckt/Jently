@@ -93,7 +93,7 @@ module Jenkins
       c.use Faraday::Request::UrlEncoded
       c.use FaradayMiddleware::FollowRedirects
       c.use Faraday::Adapter::NetHttp
-      if opts[:use_json] == true
+      if opts[:use_json]
         c.use FaradayMiddleware::Mashify
         c.use FaradayMiddleware::ParseJson
       end
