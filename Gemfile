@@ -1,7 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'jently'
-gem 'rake'
+gem 'json'
 gem 'rspec'
 gem 'webmock'
-gem 'json'
+
+gem 'rake'
+gem 'jently'
+gem 'octokit'
+gem 'systemu'
+gem 'daemons'
+gem 'faraday'
+gem 'faraday_middleware'
