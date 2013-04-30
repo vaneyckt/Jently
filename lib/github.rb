@@ -1,5 +1,4 @@
 require 'octokit'
-require './lib/helpers.rb'
 
 module Github
   def Github.get_open_pull_requests_ids
@@ -58,6 +57,10 @@ module Github
       client.create_status(repository_id, head_sha, state[:status], opts)
 
       PullRequestsData.update_status(pull_request_id, state[:status])
+
+      if state[:status] == 'success' || state[:status] == 'failure'
+        PullRequestsData.reset(pull_request_id)
+      end
     rescue => e
       Logger.log('Error when setting pull request status', e)
       sleep 5
