@@ -14,7 +14,7 @@ module Git
     Logger.log("Cloning repository - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
-  def Git.delete_testing_branch
+  def Git.delete_local_testing_branch
     config = ConfigFile.read
     repository_path = Repository.get_path
     cmd = <<-GIT
@@ -23,10 +23,23 @@ module Git
       git clean -df &&
       git checkout master &&
       git branch -D #{config[:testing_branch_name]} &&
+    GIT
+    status, stdout, stderr = systemu(cmd)
+    Logger.log("Deleting local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+  end
+
+  def Git.delete_remote_testing_branch
+    config = ConfigFile.read
+    repository_path = Repository.get_path
+    cmd = <<-GIT
+      cd #{repository_path} &&
+      git reset --hard &&
+      git clean -df &&
+      git checkout master &&
       git push origin :#{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("Deleting testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   # Assume a pull request that wants to merge sha_A of branch_A into sha_B of branch_B.
@@ -55,7 +68,8 @@ module Git
 
   def Git.setup_testing_branch(pull_request)
     Git.clone_repository if !Repository.exists_locally?
-    Git.delete_testing_branch
+    Git.delete_local_testing_branch
+    Git.delete_remote_testing_branch
     Git.create_testing_branch(pull_request)
   end
 end
