@@ -1,6 +1,5 @@
 require 'erb'
 require 'yaml'
-require './lib/helpers/logger'
 
 module ConfigFile
   def ConfigFile.get_path

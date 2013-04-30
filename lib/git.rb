@@ -1,7 +1,4 @@
 require 'systemu'
-require './lib/helpers/logger'
-require './lib/helpers/repository'
-require './lib/helpers/config_file'
 
 module Git
   def Git.clone_repository
@@ -17,7 +14,7 @@ module Git
     Logger.log("Cloning repository - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
-  def Git.delete_local_testing_branch
+  def Git.delete_testing_branch
     config = ConfigFile.read
     repository_path = Repository.get_path
     cmd = <<-GIT
@@ -25,24 +22,11 @@ module Git
       git reset --hard &&
       git clean -df &&
       git checkout master &&
-      git branch -D #{config[:testing_branch_name]}
-    GIT
-    status, stdout, stderr = systemu(cmd)
-    Logger.log("Deleting local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
-  end
-
-  def Git.delete_remote_testing_branch
-    config = ConfigFile.read
-    repository_path = Repository.get_path
-    cmd = <<-GIT
-      cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git checkout master &&
+      git branch -D #{config[:testing_branch_name]} &&
       git push origin :#{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Deleting testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   # Assume a pull request that wants to merge sha_A of branch_A into sha_B of branch_B.
@@ -52,7 +36,7 @@ module Git
   # - merge sha_b into this newly created branch.
   # Your branch now contains the same code as would have been created by merging the pull request.
   # We can now run our tests on this branch in order to determine whether merging the pull request will break any tests.
-  def Git.create_local_testing_branch(pull_request)
+  def Git.create_testing_branch(pull_request)
     config = ConfigFile.read
     repository_path = Repository.get_path
     cmd = <<-GIT
@@ -62,31 +46,16 @@ module Git
       git fetch --all &&
       git checkout #{pull_request[:head_sha]} &&
       git checkout -b #{config[:testing_branch_name]} &&
-      git merge #{pull_request[:base_sha]}
-    GIT
-    status, stdout, stderr = systemu(cmd)
-    Logger.log("Creating local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
-  end
-
-  def Git.push_local_testing_branch_to_remote
-    config = ConfigFile.read
-    repository_path = Repository.get_path
-    cmd = <<-GIT
-      cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git checkout #{config[:testing_branch_name]} &&
+      git merge #{pull_request[:base_sha]} &&
       git push origin #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
-    Logger.log("Pushing local testing branch to remote - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
+    Logger.log("Creating testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
   end
 
   def Git.setup_testing_branch(pull_request)
-    Git.clone_repository if !Repository.exists_locally
-    Git.delete_local_testing_branch
-    Git.delete_remote_testing_branch
-    Git.create_local_testing_branch(pull_request)
-    Git.push_local_testing_branch_to_remote
+    Git.clone_repository if !Repository.exists_locally?
+    Git.delete_testing_branch
+    Git.create_testing_branch(pull_request)
   end
 end

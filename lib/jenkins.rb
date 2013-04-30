@@ -1,7 +1,5 @@
 require 'faraday'
 require 'faraday_middleware'
-require './lib/helpers/logger'
-require './lib/helpers/config_file'
 
 module Jenkins
   def Jenkins.wait_for_idle_executor
@@ -15,17 +13,7 @@ module Jenkins
   def Jenkins.get_nb_of_idle_executors
     begin
       config = ConfigFile.read
-      connection = Faraday.new(:url => "#{config[:jenkins_url]}/api/json") do |c|
-        c.use Faraday::Request::UrlEncoded
-        c.use FaradayMiddleware::FollowRedirects
-        c.use FaradayMiddleware::Mashify
-        c.use FaradayMiddleware::ParseJson
-        c.use Faraday::Adapter::NetHttp
-      end
-
-      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
-        connection.basic_auth config[:jenkins_login], config[:jenkins_password]
-      end
+      connection = new_connection("#{config[:jenkins_url]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -46,15 +34,7 @@ module Jenkins
   def Jenkins.start_job(pull_request_id)
     begin
       config = ConfigFile.read
-      connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters") do |c|
-        c.use Faraday::Request::UrlEncoded
-        c.use FaradayMiddleware::FollowRedirects
-        c.use Faraday::Adapter::NetHttp
-      end
-
-      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
-        connection.basic_auth config[:jenkins_login], config[:jenkins_password]
-      end
+      connection = new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters", config)
 
       job_id = new_job_id(pull_request_id)
       connection.post do |req|
@@ -82,17 +62,7 @@ module Jenkins
   def Jenkins.get_job_state(job_id)
     begin
       config = ConfigFile.read
-      connection = Faraday.new(:url => "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json") do |c|
-        c.use Faraday::Request::UrlEncoded
-        c.use FaradayMiddleware::FollowRedirects
-        c.use FaradayMiddleware::Mashify
-        c.use FaradayMiddleware::ParseJson
-        c.use Faraday::Adapter::NetHttp
-      end
-
-      if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
-        connection.basic_auth config[:jenkins_login], config[:jenkins_password]
-      end
+      connection = new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -116,5 +86,23 @@ module Jenkins
       sleep 5
       retry
     end
+  end
+
+  def Jenkins.new_connection(url, config, opts = {})
+    connection = Faraday.new(:url => url) do |c|
+      c.use Faraday::Request::UrlEncoded
+      c.use FaradayMiddleware::FollowRedirects
+      c.use Faraday::Adapter::NetHttp
+      if opts[:use_json]
+        c.use FaradayMiddleware::Mashify
+        c.use FaradayMiddleware::ParseJson
+      end
+    end
+
+    if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
+      connection.basic_auth(config[:jenkins_login], config[:jenkins_password])
+    end
+
+    connection
   end
 end

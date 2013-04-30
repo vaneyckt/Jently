@@ -4,13 +4,15 @@
 # loaded once.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
 require './lib/git.rb'
+require './lib/core.rb'
 require './lib/github.rb'
 require './lib/jenkins.rb'
-require './lib/helpers/logger'
-require './lib/helpers/repository'
-require './lib/helpers/config_file'
-require './lib/helpers/pull_requests_data'
+require './lib/helpers/logger.rb'
+require './lib/helpers/repository.rb'
+require './lib/helpers/config_file.rb'
+require './lib/helpers/pull_requests_data.rb'
 
 require 'webmock/rspec'
 require 'json/add/core'
