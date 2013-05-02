@@ -28,7 +28,8 @@ describe Git do
   describe '.setup_testing_branch' do
     before do
       Repository.stub(:exists_locally?).and_return(true)
-      Git.stub(:delete_testing_branch)
+      Git.stub(:delete_local_testing_branch)
+      Git.stub(:delete_remote_testing_branch)
       Git.stub(:create_testing_branch)
     end
 
@@ -47,7 +48,8 @@ describe Git do
     end
 
     it 'deletes the existing testing branch' do
-      Git.should_receive(:delete_testing_branch)
+      Git.should_receive(:delete_local_testing_branch)
+      Git.should_receive(:delete_remote_testing_branch)
 
       Git.setup_testing_branch(pull_request)
     end
@@ -59,11 +61,19 @@ describe Git do
     end
   end
 
-  describe '.delete_testing_branch' do
-    it 'calls git commands that delete the testing branch' do
-      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git branch -D #{branch_name}.*git push origin :#{branch_name}/m).and_return(system_results)
+  describe '.delete_local testing_branch' do
+    it 'calls git commands that delete the local testing branch' do
+      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git branch -D #{branch_name}./m).and_return(system_results)
 
-      Git.delete_testing_branch
+      Git.delete_local_testing_branch
+    end
+  end
+
+  describe '.delete_remote testing_branch' do
+    it 'calls git commands that delete the remote testing branch' do
+      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git push origin :#{branch_name}/m).and_return(system_results)
+
+      Git.delete_remote_testing_branch
     end
   end
 
