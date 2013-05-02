@@ -86,7 +86,7 @@ module PullRequestsData
   def PullRequestsData.pull_requests_that_require_testing
     whitelist = ConfigFile.whitelist_branches
     read.values.select do | pull_request|
-      pull_request[:is_test_required] && ( !whitelist || whitelist.include?(pull_request[:base_branch]) )
+      pull_request[:is_test_required] && ( whitelist.empty? || whitelist.include?(pull_request[:base_branch]) )
     end
   end
 

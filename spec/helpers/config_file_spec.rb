@@ -62,34 +62,35 @@ describe ConfigFile do
       File.delete(config_path) if File.exists?(config_path)
     end
 
-    it 'returns nil if no :whitelist_branches key is defined' do
+    it 'returns an empty set if no :whitelist_branches key is defined' do
       File.open(config_path, 'w'){|file| file.write( "---\nfoo: baz\n" ) }
 
-      ConfigFile.whitelist_branches.should be_nil
+      ConfigFile.whitelist_branches.should be_empty
     end
 
-    it 'returns nil if :whitelist_branches value is an empty string' do
+    it 'returns an empty set if :whitelist_branches value is an empty string' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n" ) }
       
-      ConfigFile.whitelist_branches.should be_nil
+      ConfigFile.whitelist_branches.should be_empty
     end
 
-    it 'returns nil if :whitelist_branches value is an empty array' do
+    it 'returns an empty set if :whitelist_branches value is an empty array' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  -\n" ) }
 
-      ConfigFile.whitelist_branches.should be_nil
+      ConfigFile.whitelist_branches.should be_empty
     end
 
-    it 'returns an array containing a single specified whitelist branch' do
+    it 'returns a set containing a single specified whitelist branch' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches: #{branch_1}\n" ) }
 
-      ConfigFile.whitelist_branches.should eql [ branch_1 ]
+      ConfigFile.whitelist_branches.should eql Set.new([branch_1])
     end
 
     it 'returns an array of multiple specified whitelist branches' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n  - #{branch_2}\n" ) }
 
-      ConfigFile.whitelist_branches.should =~ [ branch_1, branch_2 ]
+      ConfigFile.whitelist_branches.should eql Set.new([branch_1, branch_2])
+      ConfigFile.whitelist_branches.should eql Set.new([branch_2, branch_1])
     end
   end
 end

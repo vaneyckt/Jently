@@ -19,12 +19,9 @@ module ConfigFile
 
   def ConfigFile.whitelist_branches
     branches = read[:whitelist_branches]
-    if branches
-      if branches.is_a?(String) && branches.size > 0
-        [branches]
-      elsif branches.is_a?(Array) && !branches.compact.empty?
-        branches
-      end
-    end
+
+    # in case they've specified a single branch as a string, instead of an array
+    branches = [branches] unless branches.is_a? Array
+    Set.new(branches).delete(nil)
   end
 end
