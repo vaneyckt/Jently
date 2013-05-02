@@ -22,7 +22,7 @@ module Git
       git reset --hard &&
       git clean -df &&
       git checkout master &&
-      git branch -D #{config[:testing_branch_name]} &&
+      git branch -D #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
     Logger.log("Deleting local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
