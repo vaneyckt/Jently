@@ -24,7 +24,8 @@ describe ConfigFile do
     context 'when an empty config file exists' do
       it 'returns a hash with only a :whitelist_branches key that contains an empty set' do
         File.open(config_path, 'w'){|file| file.write( YAML.dump(nil) ) }
-        ConfigFile.read.should eql Hash.new(:whitelist_branches => Set.new)
+        h = Hash.new(:whitelist_branches => Set.new)
+        ConfigFile.read.should eql Hash[:whitelist_branches, Set.new]
       end
     end
 
