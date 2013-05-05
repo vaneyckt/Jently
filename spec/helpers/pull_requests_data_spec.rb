@@ -308,7 +308,7 @@ describe PullRequestsData do
     let(:not_required_pr) { { :id => not_required_id, :is_test_required => false } }
 
     before do
-      ConfigFile.stub(:whitelist_branches).and_return( Set.new )
+      ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new] )
     end
 
     it 'returns nil when there are no stored prs' do
@@ -366,7 +366,7 @@ describe PullRequestsData do
 
       context 'when no whitelist branches are defined' do
         it 'returns the pull request with the highest priority' do
-          ConfigFile.stub(:whitelist_branches).and_return( Set.new )
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new] )
 
           PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr, non_whitelist_pr_id => non_whitelist_pr )
 
@@ -376,7 +376,7 @@ describe PullRequestsData do
 
       context 'when a whitelist branch is defined' do
         it 'returns only pull requests targeting that branch' do
-          ConfigFile.stub(:whitelist_branches).and_return( Set.new([whitelist_branch_1]) )
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new([whitelist_branch_1])] )
 
           PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr,
                                   whitelist_2_pr_id => whitelist_2_pr,
@@ -388,7 +388,7 @@ describe PullRequestsData do
 
       context 'when multiple whitelist branches are defined' do
         it 'returns the pull requests with the highest priority that targets one of those branches' do
-          ConfigFile.stub(:whitelist_branches).and_return( Set.new([whitelist_branch_1, whitelist_branch_2]) )
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new([whitelist_branch_1, whitelist_branch_2])] )
 
           PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr,
                                   whitelist_2_pr_id => whitelist_2_pr,
