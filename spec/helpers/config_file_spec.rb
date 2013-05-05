@@ -22,9 +22,9 @@ describe ConfigFile do
     end
 
     context 'when an empty config file exists' do
-      it 'returns an empty hash' do
+      it 'returns a hash with only a :whitelist_branches key that contains an empty set' do
         File.open(config_path, 'w'){|file| file.write( YAML.dump(nil) ) }
-        ConfigFile.read.should eql Hash.new
+        ConfigFile.read.should eql Hash.new(:whitelist_branches => Set.new)
       end
     end
 
@@ -48,7 +48,7 @@ describe ConfigFile do
     end
   end
 
-  describe '.whitelist_branches' do
+  describe 'whitelisted branches' do
     let(:config_path) { File.join('rspec_config.yaml') }
     let(:branch_1) { 'branch_1' }
     let(:branch_2) { 'branch_2' }
@@ -65,32 +65,26 @@ describe ConfigFile do
     it 'returns an empty set if no :whitelist_branches key is defined' do
       File.open(config_path, 'w'){|file| file.write( "---\nfoo: baz\n" ) }
 
-      ConfigFile.whitelist_branches.should be_empty
-    end
-
-    it 'returns an empty set if :whitelist_branches value is an empty string' do
-      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n" ) }
-      
-      ConfigFile.whitelist_branches.should be_empty
+      ConfigFile.read[:whitelist_branches].should be_empty
     end
 
     it 'returns an empty set if :whitelist_branches value is an empty array' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  -\n" ) }
 
-      ConfigFile.whitelist_branches.should be_empty
+      ConfigFile.read[:whitelist_branches].should be_empty
     end
 
     it 'returns a set containing a single specified whitelist branch' do
-      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches: #{branch_1}\n" ) }
+      File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n" ) }
 
-      ConfigFile.whitelist_branches.should eql Set.new([branch_1])
+      ConfigFile.read[:whitelist_branches].should eql Set.new([branch_1])
     end
 
     it 'returns an array of multiple specified whitelist branches' do
       File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n  - #{branch_2}\n" ) }
 
-      ConfigFile.whitelist_branches.should eql Set.new([branch_1, branch_2])
-      ConfigFile.whitelist_branches.should eql Set.new([branch_2, branch_1])
+      ConfigFile.read[:whitelist_branches].should eql Set.new([branch_1, branch_2])
+      ConfigFile.read[:whitelist_branches].should eql Set.new([branch_2, branch_1])
     end
   end
 end
