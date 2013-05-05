@@ -89,5 +89,4 @@ module PullRequestsData
       pull_request[:is_test_required] && ( whitelist.empty? || whitelist.include?(pull_request[:base_branch]) )
     end
   end
-
 end
