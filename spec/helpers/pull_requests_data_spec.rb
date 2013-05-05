@@ -403,7 +403,6 @@ describe PullRequestsData do
           PullRequestsData.get_pull_request_id_to_test.should eql whitelist_1_pr_id
         end
       end
-
     end
   end
 end
