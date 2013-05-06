@@ -22,9 +22,10 @@ describe ConfigFile do
     end
 
     context 'when an empty config file exists' do
-      it 'returns an empty hash' do
+      it 'returns a hash with only a :whitelist_branches key that contains an empty set' do
         File.open(config_path, 'w'){|file| file.write( YAML.dump(nil) ) }
-        ConfigFile.read.should eql Hash.new
+        h = Hash.new(:whitelist_branches => Set.new)
+        ConfigFile.read.should eql Hash[:whitelist_branches, Set.new]
       end
     end
 
@@ -44,6 +45,36 @@ describe ConfigFile do
       it 'returns the ERB-processed file, deserialized from YAML' do
         File.open(config_path, 'w'){|file| file.write( "---\nfoo: <%= 'baz' %>\n" ) }
         ConfigFile.read['foo'].should eql 'baz'
+      end
+    end
+
+    context 'when working with whitelisted branches' do
+      let(:branch_1) { 'branch_1' }
+      let(:branch_2) { 'branch_2' }
+
+      it 'returns an empty set if no :whitelist_branches key is defined' do
+        File.open(config_path, 'w'){|file| file.write( "---\nfoo: baz\n" ) }
+
+        ConfigFile.read[:whitelist_branches].should be_empty
+      end
+
+      it 'returns an empty set if :whitelist_branches value is an empty array' do
+        File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  -\n" ) }
+
+        ConfigFile.read[:whitelist_branches].should be_empty
+      end
+
+      it 'returns a set containing a single specified whitelist branch' do
+        File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n" ) }
+
+        ConfigFile.read[:whitelist_branches].should eql Set.new([branch_1])
+      end
+
+      it 'returns an array of multiple specified whitelist branches' do
+        File.open(config_path, 'w'){|file| file.write( "---\n:whitelist_branches:\n  - #{branch_1}\n  - #{branch_2}\n" ) }
+
+        ConfigFile.read[:whitelist_branches].should eql Set.new([branch_1, branch_2])
+        ConfigFile.read[:whitelist_branches].should eql Set.new([branch_2, branch_1])
       end
     end
   end

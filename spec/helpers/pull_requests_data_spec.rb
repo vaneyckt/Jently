@@ -307,6 +307,10 @@ describe PullRequestsData do
     let(:not_required_id) { 123 }
     let(:not_required_pr) { { :id => not_required_id, :is_test_required => false } }
 
+    before do
+      ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new] )
+    end
+
     it 'returns nil when there are no stored prs' do
       PullRequestsData.get_pull_request_id_to_test.should be_nil
     end
@@ -341,6 +345,63 @@ describe PullRequestsData do
                                 required_pr_2_id => required_pr_2 )
 
         PullRequestsData.get_pull_request_id_to_test.should eql required_pr_1_id
+      end
+    end
+
+    describe 'branches whitelisting' do
+      let(:whitelist_branch_1) { 'staging' }
+      let(:whitelist_branch_2) { 'new_feature' }
+      let(:non_whitelist_branch) { 'experimental' }
+
+      let(:whitelist_1_pr_id) { 123 }
+      let(:whitelist_2_pr_id) { 456 }
+      let(:non_whitelist_pr_id) { 789 }
+
+      let(:whitelist_1_pr) { { :id => whitelist_1_pr_id, :is_test_required => true,
+                             :priority => 5, :base_branch => whitelist_branch_1 } }
+      let(:whitelist_2_pr) { { :id => whitelist_2_pr_id, :is_test_required => true,
+                             :priority => 6, :base_branch => whitelist_branch_2 } }
+      let(:non_whitelist_pr) { { :id => non_whitelist_pr_id, :is_test_required => true,
+                               :priority => 10, :base_branch => non_whitelist_branch } }
+
+      context 'when no whitelist branches are defined' do
+        it 'returns the pull request with the highest priority' do
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new] )
+
+          PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr, non_whitelist_pr_id => non_whitelist_pr )
+
+          PullRequestsData.get_pull_request_id_to_test.should eql non_whitelist_pr_id
+        end
+      end
+
+      context 'when a whitelist branch is defined' do
+        it 'returns only pull requests targeting that branch' do
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new([whitelist_branch_1])] )
+
+          PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr,
+                                  whitelist_2_pr_id => whitelist_2_pr,
+                                  non_whitelist_pr_id => non_whitelist_pr )
+
+          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_1_pr_id
+        end
+      end
+
+      context 'when multiple whitelist branches are defined' do
+        it 'returns the pull requests with the highest priority that targets one of those branches' do
+          ConfigFile.stub(:read).and_return( Hash[:whitelist_branches, Set.new([whitelist_branch_1, whitelist_branch_2])] )
+
+          PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr,
+                                  whitelist_2_pr_id => whitelist_2_pr,
+                                  non_whitelist_pr_id => non_whitelist_pr )
+
+          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_2_pr_id
+
+          PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr.merge(:priority => 7),
+                                  whitelist_2_pr_id => whitelist_2_pr,
+                                  non_whitelist_pr_id => non_whitelist_pr )
+
+          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_1_pr_id
+        end
       end
     end
   end
