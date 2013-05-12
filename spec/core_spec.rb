@@ -95,7 +95,7 @@ describe Core do
       Core.test_pull_request(pull_request_id)
     end
 
-    context 'when the pull reqeust is mergeable' do
+    context 'when the pull request is mergeable' do
       it 'tells Git to set up the testing branch' do
         Git.should_receive(:setup_testing_branch).with(pull_request)
 
