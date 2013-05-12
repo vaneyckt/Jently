@@ -21,6 +21,7 @@ module Git
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
+      git fetch --all &&
       git checkout master &&
       git branch -D #{config[:testing_branch_name]}
     GIT
@@ -35,6 +36,7 @@ module Git
       cd #{repository_path} &&
       git reset --hard &&
       git clean -df &&
+      git fetch --all &&
       git checkout master &&
       git push origin :#{config[:testing_branch_name]}
     GIT
