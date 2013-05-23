@@ -59,9 +59,8 @@ module Git
       git reset --hard &&
       git clean -df &&
       git fetch --all &&
-      git checkout #{pull_request[:head_sha]} &&
       git checkout -b #{config[:testing_branch_name]} &&
-      git merge #{pull_request[:base_sha]} &&
+      git pull origin refs/pull/#{pull_request[:id]}/merge &&
       git push origin #{config[:testing_branch_name]}
     GIT
     status, stdout, stderr = systemu(cmd)
