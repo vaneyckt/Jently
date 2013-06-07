@@ -66,16 +66,19 @@ module Jenkins
 
       response = connection.get do |req|
         req.params[:depth] = 1
-        req.params[:tree] = 'builds[actions[parameters[name,value]],result,url]'
+        req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
       end
 
       state = nil
       response.body[:builds].each do |build|
         begin
           if build[:actions][0][:parameters][2][:value] == job_id
-            state = {:status => 'success', :url => build[:url]} if build[:result] == 'SUCCESS'
-            state = {:status => 'failure', :url => build[:url]} if build[:result] == 'UNSTABLE'
-            state = {:status => 'failure', :url => build[:url]} if build[:result] == 'FAILURE'
+            if !build[:building]
+                state = {:status => 'success', :url => build[:url]} if build[:result] == 'SUCCESS'
+                state = {:status => 'failure', :url => build[:url]} if build[:result] == 'UNSTABLE'
+                state = {:status => 'failure', :url => build[:url]} if build[:result] == 'FAILURE'
+                break
+            end
           end
         rescue
         end

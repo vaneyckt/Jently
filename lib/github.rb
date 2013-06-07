@@ -1,11 +1,11 @@
-require 'octokit'
-
 module Github
+
   def Github.get_open_pull_requests_ids
     begin
-      config = ConfigFile.read
+
       repository_id = Repository.get_id
-      client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
+      client = GitHub_Client.get_client
+
       open_pull_requests = client.pull_requests(repository_id, 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
     rescue => e
@@ -17,9 +17,8 @@ module Github
 
   def Github.get_pull_request(pull_request_id)
     begin
-      config = ConfigFile.read
       repository_id = Repository.get_id
-      client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
+      client = GitHub_Client.get_client
       pull_request = client.pull_request(repository_id, pull_request_id)
       statuses = client.statuses(repository_id, pull_request.head.sha)
 
@@ -29,6 +28,11 @@ module Github
       data[:mergeable] = pull_request.mergeable
       data[:head_branch] = pull_request.head.ref
       data[:head_sha] = pull_request.head.sha
+
+      # We need to know which repo the pull request is coming from so we can add it as a
+      # remote repo, so the branch fetching logic doesn't fail.
+      data[:head_repo] = pull_request.head.repo.ssh_url
+
       data[:status] = statuses.empty? ? 'undefined' : statuses.first.state
 
       # Update base_sha separately. The pull_request call is
@@ -45,7 +49,6 @@ module Github
 
   def Github.set_pull_request_status(pull_request_id, state)
     begin
-      config = ConfigFile.read
       repository_id = Repository.get_id
       head_sha = PullRequestsData.read[pull_request_id][:head_sha]
 
@@ -53,7 +56,7 @@ module Github
       opts[:target_url] = state[:url] if !state[:url].nil?
       opts[:description] = state[:description] if !state[:description].nil?
 
-      client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
+      client = GitHub_Client.get_client
       client.create_status(repository_id, head_sha, state[:status], opts)
 
       PullRequestsData.update_status(pull_request_id, state[:status])
