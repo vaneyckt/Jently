@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Git do
+  let(:id) { '123' }
   let(:head_sha) { 'abc123' }
   let(:base_sha) { 'cde456' }
   let(:login) { 'rspec_github_login' }
@@ -11,7 +12,9 @@ describe Git do
   let(:repos_dir) { File.join('rspec_repositories') }
   let(:repo_path) { File.join(repos_dir, 'rspec_repo') }
 
-  let(:pull_request) { { :head_sha => head_sha, :base_sha => base_sha } }
+  let(:merge_ref) { "refs/pull/#{id}/merge" }
+
+  let(:pull_request) { { :id => id, :head_sha => head_sha, :base_sha => base_sha } }
   let(:system_results) { [true, 'stdout', 'stderr'] }
 
   before do
@@ -78,20 +81,14 @@ describe Git do
   end
 
   describe '.create_testing_branch' do
-    it 'checks out the head sha of the pull request' do
-      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git checkout #{head_sha}/m).and_return(system_results)
-
-      Git.create_testing_branch(pull_request)
-    end
-
     it 'creates a branch with the testing branch name' do
       Git.should_receive(:systemu).with(/git checkout -b #{branch_name}/m).and_return(system_results)
 
       Git.create_testing_branch(pull_request)
     end
 
-    it 'merges the base branch up into the testing branch' do
-      Git.should_receive(:systemu).with(/git merge #{base_sha}/m).and_return(system_results)
+    it 'pulls the merged reference of the pull request' do
+      Git.should_receive(:systemu).with(/git pull origin #{merge_ref}/m).and_return(system_results)
 
       Git.create_testing_branch(pull_request)
     end
