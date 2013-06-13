@@ -87,8 +87,8 @@ describe Git do
       Git.create_testing_branch(pull_request)
     end
 
-    it 'pulls the merged reference of the pull request' do
-      Git.should_receive(:systemu).with(/git pull origin #{merge_ref}/m).and_return(system_results)
+    it 'fetches the merged reference of the pull request' do
+      Git.should_receive(:systemu).with(/git fetch origin #{merge_ref}/m).and_return(system_results)
 
       Git.create_testing_branch(pull_request)
     end
