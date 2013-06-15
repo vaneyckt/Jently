@@ -1,10 +1,8 @@
 module Github
-
   def Github.get_open_pull_requests_ids
     begin
-
+      client = Github.new_client
       repository_id = Repository.get_id
-      client = GitHub_Client.get_client
 
       open_pull_requests = client.pull_requests(repository_id, 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
@@ -17,8 +15,9 @@ module Github
 
   def Github.get_pull_request(pull_request_id)
     begin
+      client = Github.new_client
       repository_id = Repository.get_id
-      client = GitHub_Client.get_client
+
       pull_request = client.pull_request(repository_id, pull_request_id)
       statuses = client.statuses(repository_id, pull_request.head.sha)
 
@@ -56,7 +55,7 @@ module Github
       opts[:target_url] = state[:url] if !state[:url].nil?
       opts[:description] = state[:description] if !state[:description].nil?
 
-      client = GitHub_Client.get_client
+      client = Github.new_client
       client.create_status(repository_id, head_sha, state[:status], opts)
 
       PullRequestsData.update_status(pull_request_id, state[:status])
@@ -69,5 +68,22 @@ module Github
       sleep 5
       retry
     end
+  end
+
+  def new_client
+    config = ConfigFile.read
+    if config.has_key?(:github_api_endpoint)
+      Octokit.configure do |c|
+        c.api_endpoint = config[:github_api_endpoint]
+        c.web_endpoint = config[:github_web_endpoint]
+      end
+    end
+
+    if config.has_key?(:github_oauth_token)
+      client = Octokit::Client.new(:login => config[:github_login], :oauth_token => config[:github_oauth_token])
+    else
+      client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
+    end
+    client
   end
 end
