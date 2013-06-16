@@ -1,4 +1,4 @@
-{<img src="https://travis-ci.org/vaneyckt/Jently.png" />}[https://travis-ci.org/vaneyckt/Jently]
+{<img src="https://travis-ci.org/vaneyckt/Jently.png?branch=master" />}[https://travis-ci.org/vaneyckt/Jently]
 
 == Introduction
 
