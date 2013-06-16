@@ -13,7 +13,7 @@ module Jenkins
   def Jenkins.get_nb_of_idle_executors
     begin
       config = ConfigFile.read
-      connection = new_connection("#{config[:jenkins_url]}/api/json", config, :use_json => true)
+      connection = Jenkins.new_connection("#{config[:jenkins_url]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -34,7 +34,7 @@ module Jenkins
   def Jenkins.start_job(pull_request_id)
     begin
       config = ConfigFile.read
-      connection = new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters", config)
+      connection = Jenkins.new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters", config)
 
       job_id = new_job_id(pull_request_id)
       connection.post do |req|
@@ -62,7 +62,7 @@ module Jenkins
   def Jenkins.get_job_state(job_id)
     begin
       config = ConfigFile.read
-      connection = new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json", config, :use_json => true)
+      connection = Jenkins.new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
         req.params[:depth] = 1
@@ -105,7 +105,6 @@ module Jenkins
     if config.has_key?(:jenkins_login) && config.has_key?(:jenkins_password)
       connection.basic_auth(config[:jenkins_login], config[:jenkins_password])
     end
-
     connection
   end
 end
