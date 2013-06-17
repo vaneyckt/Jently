@@ -28,10 +28,6 @@ module Github
       data[:head_branch] = pull_request.head.ref
       data[:head_sha] = pull_request.head.sha
 
-      # We need to know which repo the pull request is coming from so we can add it as a
-      # remote repo, so the branch fetching logic doesn't fail.
-      data[:head_repo] = pull_request.head.repo.ssh_url
-
       data[:status] = statuses.empty? ? 'undefined' : statuses.first.state
 
       # Update base_sha separately. The pull_request call is
