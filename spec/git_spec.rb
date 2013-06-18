@@ -6,6 +6,7 @@ describe Git do
   let(:base_sha) { 'cde456' }
   let(:login) { 'rspec_github_login' }
   let(:password) { 'rspec_github_password' }
+  let(:oauth_token) { 'rspec_github_oauth_token' }
   let(:branch_name) { 'some_crazy_branch' }
 
   let(:repo_id) { "rspec_user/rspec_repo" }
@@ -36,18 +37,41 @@ describe Git do
       Git.stub(:create_testing_branch)
     end
 
-    it 'does not clone the repository when it exists locally' do
-      Repository.stub(:exists_locally?).and_return(true)
-      Git.should_not_receive(:clone_repository)
+    context 'when the github authentication is performed with a login and password' do
+      it 'does not clone the repository when it exists locally' do
+        Repository.stub(:exists_locally?).and_return(true)
+        Git.should_not_receive(:clone_repository)
 
-      Git.setup_testing_branch(pull_request)
+        Git.setup_testing_branch(pull_request)
+      end
+
+      it 'clones the repository when it does not exist locally' do
+        Repository.stub(:exists_locally?).and_return(false)
+        Git.should_receive(:clone_repository)
+
+        Git.setup_testing_branch(pull_request)
+      end
     end
 
-    it 'clones the repository when it does not exist locally' do
-      Repository.stub(:exists_locally?).and_return(false)
-      Git.should_receive(:clone_repository)
+    context 'when the github authentication is performed with a login and oauth token' do
+      before do
+        ConfigFile.stub(:read).and_return(:github_login => login, :github_oauth_token => oauth_token,
+                                          :testing_branch_name => branch_name)
+      end
 
-      Git.setup_testing_branch(pull_request)
+      it 'does not clone the repository when it exists locally' do
+        Repository.stub(:exists_locally?).and_return(true)
+        Git.should_not_receive(:clone_repository)
+
+        Git.setup_testing_branch(pull_request)
+      end
+
+      it 'clones the repository when it does not exist locally' do
+        Repository.stub(:exists_locally?).and_return(false)
+        Git.should_receive(:clone_repository)
+
+        Git.setup_testing_branch(pull_request)
+      end
     end
 
     it 'deletes the existing testing branch' do
