@@ -1,3 +1,5 @@
+require 'octokit'
+
 module Github
   def Github.get_open_pull_requests_ids
     begin
