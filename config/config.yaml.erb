@@ -1,13 +1,22 @@
 ---
 # The account that Jently will use for communicating with GitHub.
+# You can either use standard login credentials, or you can
+# specify a GitHub oauth token. If you choose to use an oauth token,
+# make sure to comment out or delete the github_password from this file.
 # Note that this config file supports ERB. This allows you to store
 # sensitive information as shell environment variables which can then
 # be referred to in this file.
-# For example, if you were to store your github login as the GITHUB_LOGIN
-# environment variable, then you could specify your github login like this:
+# For example, if you were to store your GitHub login as the GITHUB_LOGIN
+# environment variable, then you could specify your GitHub login like this:
 # :github_login: <%= ENV['GITHUB_LOGIN'] %>
 :github_login: github_login
 :github_password: github_password
+#:github_oauth_token: github_oauth_token
+
+# To use Jently with GitHub Enterprise, you'll need to set the GitHub
+# API and web endpoints. Otherwise, leave these lines commented out.
+#:github_api_endpoint: github_api_endpoint
+#:github_web_endpoint: github_web_endpoint
 
 # The repository that contains the pull requests you want to run tests on.
 # For example, if you wanted to test the pull requests of the Jently repository,
@@ -19,7 +28,7 @@
 :github_polling_interval_seconds: 60
 
 # If access to your Jenkins CI is restricted with a login and password,
-# you can enther these here. Otherwise you should delete these lines.
+# you can enther these here. Otherwise you should comment out or delete these lines.
 :jenkins_login: jenkins_login
 :jenkins_password: jenkins_password
 
