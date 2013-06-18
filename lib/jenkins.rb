@@ -74,10 +74,9 @@ module Jenkins
         begin
           if build[:actions][0][:parameters][2][:value] == job_id
             if !build[:building]
-                state = {:status => 'success', :url => build[:url]} if build[:result] == 'SUCCESS'
-                state = {:status => 'failure', :url => build[:url]} if build[:result] == 'UNSTABLE'
-                state = {:status => 'failure', :url => build[:url]} if build[:result] == 'FAILURE'
-                break
+              state = {:status => 'success', :url => build[:url]} if build[:result] == 'SUCCESS'
+              state = {:status => 'failure', :url => build[:url]} if build[:result] == 'UNSTABLE'
+              state = {:status => 'failure', :url => build[:url]} if build[:result] == 'FAILURE'
             end
           end
         rescue

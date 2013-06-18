@@ -6,16 +6,16 @@ module Git
     repository_id = Repository.get_id
     repository_dir = Repository.get_dir
 
-    if(config.has_key?(:github_oauth_token))
-       cmd = <<-GIT
-         cd #{repository_dir} &&
-         git clone #{config[:github_ssh_repository]}
-       GIT
+    if config.has_key?(:github_oauth_token)
+      cmd = <<-GIT
+        cd #{repository_dir} &&
+        git clone #{config[:github_ssh_repository]}
+      GIT
     else
-       cmd = <<-GIT
-         cd #{repository_dir} &&
-         git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
-       GIT
+      cmd = <<-GIT
+        cd #{repository_dir} &&
+        git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
+      GIT
     end
 
     Logger.log("Started cloning repository ...")
