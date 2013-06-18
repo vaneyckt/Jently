@@ -77,7 +77,6 @@ module Jenkins
               state = {:status => 'success', :url => build[:url]} if build[:result] == 'SUCCESS'
               state = {:status => 'failure', :url => build[:url]} if build[:result] == 'UNSTABLE'
               state = {:status => 'failure', :url => build[:url]} if build[:result] == 'FAILURE'
-              break
             end
           end
         rescue
