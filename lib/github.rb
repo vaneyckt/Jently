@@ -68,7 +68,7 @@ module Github
     end
   end
 
-  def new_client
+  def Github.new_client
     config = ConfigFile.read
     if config.has_key?(:github_api_endpoint)
       Octokit.configure do |c|
