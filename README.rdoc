@@ -58,4 +58,4 @@ This command will start Jently as a daemon process in the background. If this is
 === Common problems
 
 - ensure that Jently has read and write permissions for the /db folder and its contents.
-- certain older versions of Ruby have been observed to suffer the occasional hiccup. Ruby 2.0.0-p195 should work perfectly though.
+- certain older versions of Ruby have been observed to suffer the occasional hiccup. Ruby 2.0.0-p195 will work perfectly.
