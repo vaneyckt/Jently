@@ -54,3 +54,8 @@ Navigate into the Jently folder and run:
     bundle exec rake jently:start
 
 This command will start Jently as a daemon process in the background. If this is your first run, Jently will start by cloning the specified repository into the /repositories directory, and will also create a .yaml file in the /db directory to help keep track of pull requests.
+
+=== Common problems
+
+- ensure that Jently has read and write permissions for the /db folder and its contents.
+- certain older versions of Ruby have been observed to suffer the occasional hiccup. Ruby 2.0.0-p195 should work perfectly though.
