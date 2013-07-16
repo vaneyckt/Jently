@@ -7,15 +7,11 @@ module Git
     repository_dir = Repository.get_dir
 
     if config.has_key?(:github_oauth_token)
-      cmd = <<-GIT
-        cd #{repository_dir} &&
-        git clone #{config[:github_ssh_repository]}
-      GIT
+      cmd = "cd #{repository_dir} &&"\
+            "git clone #{config[:github_ssh_repository]}"
     else
-      cmd = <<-GIT
-        cd #{repository_dir} &&
-        git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git
-      GIT
+      cmd = "cd #{repository_dir} &&"\
+            "git clone https://#{config[:github_login]}:#{config[:github_password]}@github.com/#{repository_id}.git"
     end
 
     Logger.log("Started cloning repository ...")
@@ -27,14 +23,12 @@ module Git
     config = ConfigFile.read
     repository_path = Repository.get_path
 
-    cmd = <<-GIT
-      cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git fetch --all &&
-      git checkout master &&
-      git branch -D #{config[:testing_branch_name]}
-    GIT
+    cmd = "cd #{repository_path} &&"\
+          "git reset --hard &&"\
+          "git clean -df &&"\
+          "git fetch --all &&"\
+          "git checkout master &&"\
+          "git branch -D #{config[:testing_branch_name]}"
 
     status, stdout, stderr = systemu(cmd)
     Logger.log("Deleting local testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
@@ -44,14 +38,12 @@ module Git
     config = ConfigFile.read
     repository_path = Repository.get_path
 
-    cmd = <<-GIT
-      cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git fetch --all &&
-      git checkout master &&
-      git push origin :#{config[:testing_branch_name]}
-    GIT
+    cmd = "cd #{repository_path} &&"\
+          "git reset --hard &&"\
+          "git clean -df &&"\
+          "git fetch --all &&"\
+          "git checkout master &&"\
+          "git push origin :#{config[:testing_branch_name]}"
 
     status, stdout, stderr = systemu(cmd)
     Logger.log("Deleting remote testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
@@ -63,15 +55,13 @@ module Git
     config = ConfigFile.read
     repository_path = Repository.get_path
 
-    cmd = <<-GIT
-      cd #{repository_path} &&
-      git reset --hard &&
-      git clean -df &&
-      git fetch origin refs/pull/#{pull_request[:id]}/merge &&
-      git checkout FETCH_HEAD &&
-      git checkout -b #{config[:testing_branch_name]} &&
-      git push origin #{config[:testing_branch_name]}
-    GIT
+    cmd = "cd #{repository_path} &&"\
+          "git reset --hard &&"\
+          "git clean -df &&"\
+          "git fetch origin refs/pull/#{pull_request[:id]}/merge &&"\
+          "git checkout FETCH_HEAD &&"\
+          "git checkout -b #{config[:testing_branch_name]} &&"\
+          "git push origin #{config[:testing_branch_name]}"
 
     status, stdout, stderr = systemu(cmd)
     Logger.log("Creating testing branch - status: #{status} - stdout: #{stdout} - stderr: #{stderr}")
