@@ -90,7 +90,7 @@ describe Git do
 
   describe '.delete_local testing_branch' do
     it 'calls git commands that delete the local testing branch' do
-      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git branch -D #{branch_name}./m).and_return(system_results)
+      Git.should_receive(:systemu).with(/\s*cd #{repo_path}.*git branch -D #{branch_name}/m).and_return(system_results)
 
       Git.delete_local_testing_branch
     end
