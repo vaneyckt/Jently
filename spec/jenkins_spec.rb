@@ -201,7 +201,7 @@ describe Jenkins do
 
     it 'sends a GET request to the Jenkins api' do
       thr = Thread.new do
-        expected_params = {:depth => '1', :tree => 'builds[actions[parameters[name,value]],building,result,url]'}
+        expected_params = {:depth => '1', :tree => 'builds[actions[parameters[name,value]],building,number,result,url]'}
         Jenkins.get_job_state(successful_job_id)
         WebMock.should have_requested(:get, api_url).with( :query => hash_including(expected_params) )
       end

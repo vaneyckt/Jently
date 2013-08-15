@@ -66,7 +66,7 @@ module Jenkins
 
       response = connection.get do |req|
         req.params[:depth] = 1
-        req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
+        req.params[:tree] = 'builds[actions[parameters[name,value]],building,number,result,url]'
       end
 
       state = nil
