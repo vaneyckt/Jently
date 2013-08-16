@@ -5,7 +5,7 @@ module Logger
   end
 
   def Logger.log(message, exception = nil)
-    exception_output = " - #{exception} - #{exception.backtrace}" if exception
+    exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
     File.open(get_path, 'a') { |file| file << log_prefix + message + exception_output.to_s + " \n\n" }
   end
 
