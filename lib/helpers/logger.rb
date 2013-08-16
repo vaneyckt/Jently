@@ -1,6 +1,7 @@
 module Logger
   def Logger.get_path
-    "#{Dir.pwd}/log"
+    root = Pathname.new(__FILE__).parent.parent.parent
+    (root + 'log').to_s
   end
 
   def Logger.log(message, exception = nil)
