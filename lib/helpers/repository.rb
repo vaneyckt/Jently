@@ -9,7 +9,8 @@ module Repository
   end
 
   def Repository.get_dir
-    "#{Dir.pwd}/repositories"
+    root = Pathname.new(__FILE__).parent.parent.parent
+    (root + 'repositories').to_s
   end
 
   def Repository.get_path

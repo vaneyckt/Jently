@@ -64,12 +64,20 @@ module Jenkins
   def Jenkins.get_job_state(job_id)
     begin
       config = ConfigFile.read
-      connection = Jenkins.new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json", config, :use_json => true)
+      url    = "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json"
+      connection = Jenkins.new_connection(url, config, :use_json => true)
 
-      response = connection.get do |req|
-        req.params[:depth] = 1
-        req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
-        req.params[:random] = Time.now.to_i
+
+      begin
+        response = connection.get do |req|
+          req.params[:depth] = 1
+          req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
+          req.params[:random] = Time.now.to_i
+        end
+      rescue Faraday::Error::ParsingError => e
+        Logger.log("There was a problem talking to Jenkins about the #{config[:jenkins_job_name]} job")
+        Logger.log('You may not have set up a parameterised Jenkins build per the README.')
+        raise e
       end
 
       state = nil
