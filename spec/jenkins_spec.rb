@@ -10,7 +10,7 @@ describe Jenkins do
   end
 
   describe '.get_nb_of_idle_executors' do
-    let(:api_url) { "#{jenkins_url}/api/json?depth=1&tree=assignedLabels%5BidleExecutors%5D" }
+    let(:api_url) { "#{jenkins_url}/api/json?depth=1&tree=assignedLabels%5BidleExecutors%5D&random=#{Time.now.to_i}" }
     let(:config_data) { { :jenkins_url => jenkins_url } }
     let(:idle_executors) { 5 }
     let(:json_response) { '{"assignedLabels": { "0": {"idleExecutors": ' + idle_executors.to_s + '} } }' }
@@ -201,7 +201,7 @@ describe Jenkins do
 
     it 'sends a GET request to the Jenkins api' do
       thr = Thread.new do
-        expected_params = {:depth => '1', :tree => 'builds[actions[parameters[name,value]],building,number,result,url]'}
+        expected_params = {:depth => '1', :tree => 'builds[actions[parameters[name,value]],building,result,url]'}
         Jenkins.get_job_state(successful_job_id)
         WebMock.should have_requested(:get, api_url).with( :query => hash_including(expected_params) )
       end

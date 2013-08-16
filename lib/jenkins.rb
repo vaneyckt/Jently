@@ -18,6 +18,7 @@ module Jenkins
       response = connection.get do |req|
         req.params[:depth] = 1
         req.params[:tree] = 'assignedLabels[idleExecutors]'
+        req.params[:random] = Time.now.to_i
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
@@ -41,6 +42,7 @@ module Jenkins
         req.params[:id] = job_id
         req.params[:branch] = config[:testing_branch_name]
         req.params[:repository] = config[:github_ssh_repository]
+        req.params[:random] = Time.now.to_i
       end
       job_id
     rescue => e
@@ -66,7 +68,8 @@ module Jenkins
 
       response = connection.get do |req|
         req.params[:depth] = 1
-        req.params[:tree] = 'builds[actions[parameters[name,value]],building,number,result,url]'
+        req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
+        req.params[:random] = Time.now.to_i
       end
 
       state = nil
