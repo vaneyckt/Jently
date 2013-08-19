@@ -14,7 +14,7 @@ module Repository
   end
 
   def Repository.get_path
-    repository_dir = get_dir
+    repository_dir  = get_dir
     repository_name = get_name
     "#{repository_dir}/#{repository_name}"
   end

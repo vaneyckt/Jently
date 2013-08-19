@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Core do
   describe '.poll_pull_requests_and_queue_next_job' do
     let(:pull_request_id) { 1234 }
-    let(:base_branch) { 'abc_branch' }
-    let(:pull_request) { { :id => pull_request_id, :base_branch => base_branch } }
+    let(:base_branch)     { 'abc_branch' }
+    let(:pull_request)    { { :id => pull_request_id, :base_branch => base_branch } }
 
     before do
       Github.stub(:get_open_pull_requests_ids).and_return([pull_request_id])
@@ -74,9 +74,9 @@ describe Core do
   describe '.test_pull_request' do
     let(:pull_request_id) { 1234 }
     let(:jenkins_timeout) { 0.5 }
-    let(:job_id) { 456789 }
-    let(:pull_request) { { :id => pull_request_id, :mergeable => true } }
-    let(:job_state) { { :status => 'success' } }
+    let(:job_id)          { 456789 }
+    let(:pull_request)    { { :id => pull_request_id, :mergeable => true } }
+    let(:job_state)       { { :status => 'success' } }
 
     before do
       ConfigFile.stub(:read).and_return(:jenkins_job_timeout_seconds => jenkins_timeout)
@@ -161,7 +161,7 @@ describe Core do
 
       context 'when the pull request test fails' do
         let(:error_message) { "expected_messsage" }
-        let(:exception) { StandardError.new(error_message) }
+        let(:exception)     { StandardError.new(error_message) }
 
         before do
           ConfigFile.stub(:read).and_raise(exception)

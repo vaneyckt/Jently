@@ -12,12 +12,12 @@ module Jenkins
 
   def Jenkins.get_nb_of_idle_executors
     begin
-      config = ConfigFile.read
+      config     = ConfigFile.read
       connection = Jenkins.new_connection("#{config[:jenkins_url]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
-        req.params[:depth] = 1
-        req.params[:tree] = 'assignedLabels[idleExecutors]'
+        req.params[:depth]  = 1
+        req.params[:tree]   = 'assignedLabels[idleExecutors]'
         req.params[:random] = Time.now.to_i
       end
       response.body[:assignedLabels][0][:idleExecutors]
@@ -34,15 +34,15 @@ module Jenkins
 
   def Jenkins.start_job(pull_request_id)
     begin
-      config = ConfigFile.read
+      config     = ConfigFile.read
       connection = Jenkins.new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters", config)
 
       job_id = new_job_id(pull_request_id)
       connection.post do |req|
-        req.params[:id] = job_id
-        req.params[:branch] = config[:testing_branch_name]
+        req.params[:id]         = job_id
+        req.params[:branch]     = config[:testing_branch_name]
         req.params[:repository] = config[:github_ssh_repository]
-        req.params[:random] = Time.now.to_i
+        req.params[:random]     = Time.now.to_i
       end
       job_id
     rescue => e
@@ -63,15 +63,14 @@ module Jenkins
 
   def Jenkins.get_job_state(job_id)
     begin
-      config = ConfigFile.read
-      url    = "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json"
+      config     = ConfigFile.read
+      url        = "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json"
       connection = Jenkins.new_connection(url, config, :use_json => true)
-
 
       begin
         response = connection.get do |req|
-          req.params[:depth] = 1
-          req.params[:tree] = 'builds[actions[parameters[name,value]],building,result,url]'
+          req.params[:depth]  = 1
+          req.params[:tree]   = 'builds[actions[parameters[name,value]],building,result,url]'
           req.params[:random] = Time.now.to_i
         end
       rescue Faraday::Error::ParsingError => e

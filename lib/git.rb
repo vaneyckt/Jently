@@ -2,8 +2,8 @@ require 'systemu'
 
 module Git
   def Git.clone_repository
-    config = ConfigFile.read
-    repository_id = Repository.get_id
+    config         = ConfigFile.read
+    repository_id  = Repository.get_id
     repository_dir = Repository.get_dir
 
     if config.has_key?(:github_oauth_token)
@@ -20,7 +20,7 @@ module Git
   end
 
   def Git.delete_local_testing_branch
-    config = ConfigFile.read
+    config          = ConfigFile.read
     repository_path = Repository.get_path
 
     cmd = "cd #{repository_path} &&"\
@@ -35,7 +35,7 @@ module Git
   end
 
   def Git.delete_remote_testing_branch
-    config = ConfigFile.read
+    config          = ConfigFile.read
     repository_path = Repository.get_path
 
     cmd = "cd #{repository_path} &&"\
@@ -52,7 +52,7 @@ module Git
   # Fetch the code that would result from merging this pull request straight from Github.
   # The branch containing this code will now be available locally as FETCH_HEAD.
   def Git.create_testing_branch(pull_request)
-    config = ConfigFile.read
+    config          = ConfigFile.read
     repository_path = Repository.get_path
 
     cmd = "cd #{repository_path} &&"\
