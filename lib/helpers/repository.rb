@@ -3,24 +3,4 @@ module Repository
     config = ConfigFile.read
     config[:github_ssh_repository].split('.com:').last.split('.git').first
   end
-
-  def Repository.get_name
-    get_id.split('/').last
-  end
-
-  def Repository.get_dir
-    root = Pathname.new(__FILE__).parent.parent.parent
-    (root + 'repositories').to_s
-  end
-
-  def Repository.get_path
-    repository_dir = get_dir
-    repository_name = get_name
-    "#{repository_dir}/#{repository_name}"
-  end
-
-  def Repository.exists_locally?
-    repository_path = get_path
-    File.directory?(repository_path)
-  end
 end
