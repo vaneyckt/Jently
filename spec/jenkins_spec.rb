@@ -114,7 +114,7 @@ describe Jenkins do
     it 'posts to jenkins build job action with params: job name and git repo from config and generated job id' do
       thr = Thread.new do
         expected_params = {:branch => testing_branch_name, :repository => github_ssh_repository, :id => job_id.to_s}
-        Jenkins.start_job(:pull_request_id)
+        Jenkins.start_job(pull_request_id)
         WebMock.should have_requested(:post, /\A#{api_url}.*/).with( :query => hash_including(expected_params) )
       end
 
@@ -129,7 +129,7 @@ describe Jenkins do
       it 'sends a request with basic auth credentials' do
         thr = Thread.new do
           config_data.merge!(:jenkins_login => jenkins_login, :jenkins_password => jenkins_password)
-          Jenkins.start_job(:pull_request_id)
+          Jenkins.start_job(pull_request_id)
           WebMock.should have_requested(:post, /\A#{api_url}.*/)
         end
 
@@ -148,7 +148,7 @@ describe Jenkins do
       it 'logs the failure' do
         thr = Thread.new do
           Logger.should_receive(:log).with(/Error.*starting job.*/, request_error)
-          Jenkins.start_job(:pull_request_id)
+          Jenkins.start_job(pull_request_id)
         end
 
         thr.join(5).should_not be_nil
@@ -157,7 +157,7 @@ describe Jenkins do
       it 'retries the request after a 5 second delay' do
         thr = Thread.new do
           Jenkins.should_receive(:sleep).with(5)
-          Jenkins.start_job(:pull_request_id)
+          Jenkins.start_job(pull_request_id)
           WebMock.should have_requested(:post, /\A#{api_url}.*/).twice
         end
 
