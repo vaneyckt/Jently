@@ -14,7 +14,7 @@ describe Logger do
     end
 
     context 'when an exception is specified' do
-      let(:exception_message) { 'something bad happened' }
+      let(:exception_message)   { 'something bad happened' }
       let(:exception_backtrace) { ['a valid backtrace'] }
 
       let(:exception) { StandardError.new(exception_message) }

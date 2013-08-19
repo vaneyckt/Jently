@@ -65,17 +65,16 @@ describe PullRequestsData do
   end
 
   describe '.update' do
-    let(:pull_request_id) { 'abc123' }
-    let(:old_status) { 'success' }
-    let(:new_status) { 'failed' }
-    let(:old_priority) { 123 }
-    let(:new_priority) { 456 }
+    let(:pull_request_id)   { 'abc123' }
+    let(:old_status)        { 'success' }
+    let(:new_status)        { 'failed' }
+    let(:old_priority)      { 123 }
+    let(:new_priority)      { 456 }
     let(:old_test_required) { false }
     let(:new_test_required) { true }
 
-    let(:old_data) { { :id => pull_request_id, :status => old_status, :priority => old_priority,
-                       :is_test_required => old_test_required } }
-    let(:new_data) { {:id => pull_request_id, :status => new_status} }
+    let(:old_data) { { :id => pull_request_id, :status => old_status, :priority => old_priority, :is_test_required => old_test_required } }
+    let(:new_data) { { :id => pull_request_id, :status => new_status} }
 
     before do
       PullRequestsData.stub(:get_new_priority).and_return(new_priority)
@@ -169,7 +168,7 @@ describe PullRequestsData do
     end
 
     let(:stored_sha) { 'abc123' }
-    let(:stored_pr) { { :id => id, :status => 'success', :base_sha => stored_sha } }
+    let(:stored_pr)  { { :id => id, :status => 'success', :base_sha => stored_sha } }
 
     context 'when the pull request is not new' do
       before do
@@ -196,9 +195,9 @@ describe PullRequestsData do
   end
 
   describe '.get_new_priority' do
-    let(:id) { 456 }
+    let(:id)           { 456 }
     let(:old_priority) { 6 }
-    let(:pr) { { :id => id, :priority => old_priority } }
+    let(:pr)           { { :id => id, :priority => old_priority } }
 
     it 'returns 0 then the pull request is new' do
       PullRequestsData.get_new_priority(pr).should eql 0
@@ -255,10 +254,9 @@ describe PullRequestsData do
         end
 
         context 'when the specified pr has a status of success' do
-          let(:head_sha) { 'abc123' }
-          let(:base_sha) { 'def456' }
-          let(:stored_pr) { {:id => id, :merged => false, :status => 'success',
-                             :head_sha => head_sha, :base_sha => base_sha } }
+          let(:head_sha)  { 'abc123' }
+          let(:base_sha)  { 'def456' }
+          let(:stored_pr) { {:id => id, :merged => false, :status => 'success', :head_sha => head_sha, :base_sha => base_sha } }
 
           before do
             PullRequestsData.write( id => stored_pr )
@@ -278,10 +276,9 @@ describe PullRequestsData do
         end
 
         context 'when the specified pr has a status of failure' do
-          let(:head_sha) { 'abc123' }
-          let(:base_sha) { 'def456' }
-          let(:stored_pr) { {:id => id, :merged => false, :status => 'failure',
-                             :head_sha => head_sha, :base_sha => base_sha } }
+          let(:head_sha)  { 'abc123' }
+          let(:base_sha)  { 'def456' }
+          let(:stored_pr) { {:id => id, :merged => false, :status => 'failure', :head_sha => head_sha, :base_sha => base_sha } }
 
           before do
             PullRequestsData.write( id => stored_pr )
@@ -322,7 +319,7 @@ describe PullRequestsData do
     end
 
     let(:required_pr_1_id) { 456 }
-    let(:required_pr_1) { { :id => required_pr_1_id, :is_test_required => true, :priority => 5 } }
+    let(:required_pr_1)    { { :id => required_pr_1_id, :is_test_required => true, :priority => 5 } }
 
     context 'when there are stored prs with is_test_required set to true and false' do
       it 'returns the only prs with is_test_required set to true' do
@@ -341,28 +338,24 @@ describe PullRequestsData do
 
         PullRequestsData.get_pull_request_id_to_test.should eql required_pr_2_id
 
-        PullRequestsData.write( required_pr_1_id => required_pr_1.merge(:priority => 7),
-                                required_pr_2_id => required_pr_2 )
+        PullRequestsData.write( required_pr_1_id => required_pr_1.merge(:priority => 7), required_pr_2_id => required_pr_2 )
 
         PullRequestsData.get_pull_request_id_to_test.should eql required_pr_1_id
       end
     end
 
     describe 'branches whitelisting' do
-      let(:whitelist_branch_1) { 'staging' }
-      let(:whitelist_branch_2) { 'new_feature' }
+      let(:whitelist_branch_1)   { 'staging' }
+      let(:whitelist_branch_2)   { 'new_feature' }
       let(:non_whitelist_branch) { 'experimental' }
 
-      let(:whitelist_1_pr_id) { 123 }
-      let(:whitelist_2_pr_id) { 456 }
+      let(:whitelist_1_pr_id)   { 123 }
+      let(:whitelist_2_pr_id)   { 456 }
       let(:non_whitelist_pr_id) { 789 }
 
-      let(:whitelist_1_pr) { { :id => whitelist_1_pr_id, :is_test_required => true,
-                             :priority => 5, :base_branch => whitelist_branch_1 } }
-      let(:whitelist_2_pr) { { :id => whitelist_2_pr_id, :is_test_required => true,
-                             :priority => 6, :base_branch => whitelist_branch_2 } }
-      let(:non_whitelist_pr) { { :id => non_whitelist_pr_id, :is_test_required => true,
-                               :priority => 10, :base_branch => non_whitelist_branch } }
+      let(:whitelist_1_pr)   { { :id => whitelist_1_pr_id,   :is_test_required => true, :priority => 5,  :base_branch => whitelist_branch_1 } }
+      let(:whitelist_2_pr)   { { :id => whitelist_2_pr_id,   :is_test_required => true, :priority => 6,  :base_branch => whitelist_branch_2 } }
+      let(:non_whitelist_pr) { { :id => non_whitelist_pr_id, :is_test_required => true, :priority => 10, :base_branch => non_whitelist_branch } }
 
       context 'when no whitelist branches are defined' do
         it 'returns the pull request with the highest priority' do

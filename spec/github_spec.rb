@@ -17,9 +17,9 @@ describe Github do
     let(:config_data) { { :github_login => github_login, :github_password => github_password } }
 
     describe '.get_open_pull_requests_ids' do
-      let(:octokit_client) { mock(Octokit::Client) }
+      let(:octokit_client)      { mock(Octokit::Client) }
       let(:pull_request_number) { 1234 }
-      let(:pull_request) { mock('PullRequest', :number => pull_request_number) }
+      let(:pull_request)        { mock('PullRequest', :number => pull_request_number) }
 
       before do
         Octokit::Client.stub(:new).and_return(octokit_client)
@@ -72,13 +72,12 @@ describe Github do
     end
 
     describe '.get_pull_request' do
-      let(:pull_request_id) { 1234 }
-      let(:head) { mock('Commit', :sha => 'abcdef', :ref => 'valid/ref') }
-      let(:base) { mock('Commit', :sha => 'ghijkl', :ref => 'other/valid/ref') }
+      let(:head)      { mock('Commit', :sha => 'abcdef', :ref => 'valid/ref') }
+      let(:base)      { mock('Commit', :sha => 'ghijkl', :ref => 'other/valid/ref') }
       let(:base_last) { mock('Commit', :sha => 'mnopqr', :ref => 'last/base/ref') }
 
-      let(:pull_request) { mock('PullRequest', :number => pull_request_id, :head => head, :base => base,
-                                               :mergeable => true, :merged => false) }
+      let(:pull_request_id) { 1234 }
+      let(:pull_request)    { mock('PullRequest', :number => pull_request_id, :head => head, :base => base, :mergeable => true, :merged => false) }
 
       let(:octokit_client) { mock(Octokit::Client) }
 
@@ -178,12 +177,12 @@ describe Github do
     describe '.set_pull_request_status' do
       let(:pull_request_id) { 1234 }
       let(:octokit_client)  { mock(Octokit::Client) }
-      let(:success_state)   { { :url => 'http://valid.url', :status => 'success',
-                                :description => 'valid description' } }
+
+      let(:success_state)   { { :url => 'http://valid.url', :status => 'success', :description => 'valid description' } }
       let(:undefined_state) { { :url => nil, :status => 'undefined', :description => nil } }
       let(:failed_state)    { { :status => 'failure' } }
 
-      let(:head_sha) { 'abcdefg' }
+      let(:head_sha)           { 'abcdefg' }
       let(:pull_requests_data) { { pull_request_id => {:head_sha => head_sha} } }
 
       before do
@@ -295,9 +294,9 @@ describe Github do
     let(:config_data) { { :github_login => github_login, :github_oauth_token => github_oauth_token } }
 
     describe '.get_open_pull_requests_ids' do
-      let(:octokit_client) { mock(Octokit::Client) }
+      let(:octokit_client)      { mock(Octokit::Client) }
       let(:pull_request_number) { 1234 }
-      let(:pull_request) { mock('PullRequest', :number => pull_request_number) }
+      let(:pull_request)        { mock('PullRequest', :number => pull_request_number) }
 
       before do
         Octokit::Client.stub(:new).and_return(octokit_client)
@@ -350,13 +349,12 @@ describe Github do
     end
 
     describe '.get_pull_request' do
-      let(:pull_request_id) { 1234 }
-      let(:head) { mock('Commit', :sha => 'abcdef', :ref => 'valid/ref') }
-      let(:base) { mock('Commit', :sha => 'ghijkl', :ref => 'other/valid/ref') }
+      let(:head)      { mock('Commit', :sha => 'abcdef', :ref => 'valid/ref') }
+      let(:base)      { mock('Commit', :sha => 'ghijkl', :ref => 'other/valid/ref') }
       let(:base_last) { mock('Commit', :sha => 'mnopqr', :ref => 'last/base/ref') }
 
-      let(:pull_request) { mock('PullRequest', :number => pull_request_id, :head => head, :base => base,
-                                               :mergeable => true, :merged => false) }
+      let(:pull_request_id) { 1234 }
+      let(:pull_request)    { mock('PullRequest', :number => pull_request_id, :head => head, :base => base, :mergeable => true, :merged => false) }
 
       let(:octokit_client) { mock(Octokit::Client) }
 
@@ -456,12 +454,12 @@ describe Github do
     describe '.set_pull_request_status' do
       let(:pull_request_id) { 1234 }
       let(:octokit_client)  { mock(Octokit::Client) }
-      let(:success_state)   { { :url => 'http://valid.url', :status => 'success',
-                                :description => 'valid description' } }
+
+      let(:success_state)   { { :url => 'http://valid.url', :status => 'success', :description => 'valid description' } }
       let(:undefined_state) { { :url => nil, :status => 'undefined', :description => nil } }
       let(:failed_state)    { { :status => 'failure' } }
 
-      let(:head_sha) { 'abcdefg' }
+      let(:head_sha)           { 'abcdefg' }
       let(:pull_requests_data) { { pull_request_id => {:head_sha => head_sha} } }
 
       before do
