@@ -9,7 +9,6 @@ module Core
       end
 
       if pull_request[:mergeable] == true
-        Git.setup_testing_branch(pull_request)
         Jenkins.wait_for_idle_executor
 
         thr = Thread.new do

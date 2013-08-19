@@ -40,7 +40,7 @@ module Jenkins
       job_id = new_job_id(pull_request_id)
       connection.post do |req|
         req.params[:id]         = job_id
-        req.params[:branch]     = config[:testing_branch_name]
+        req.params[:branch]     = "origin/pr/#{pull_request_id}/merge"
         req.params[:repository] = config[:github_ssh_repository]
         req.params[:random]     = Time.now.to_i
       end
