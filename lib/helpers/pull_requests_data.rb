@@ -2,7 +2,8 @@ require 'yaml'
 
 module PullRequestsData
   def PullRequestsData.get_path
-    "#{Dir.pwd}/db/pull_requests.yaml"
+    root = Pathname.new(__FILE__).parent.parent.parent
+    (root + 'db' + 'pull_requests.yaml').to_s
   end
 
   def PullRequestsData.read

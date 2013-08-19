@@ -15,7 +15,7 @@ describe Logger do
 
     context 'when an exception is specified' do
       let(:exception_message) { 'something bad happened' }
-      let(:exception_backtrace) { 'a valid backtrace' }
+      let(:exception_backtrace) { ['a valid backtrace'] }
 
       let(:exception) { StandardError.new(exception_message) }
 
@@ -24,7 +24,7 @@ describe Logger do
         Logger.log('anything', exception)
         results = File.read(log_path)
         results.should include exception_message
-        results.should include exception_backtrace
+        results.should include exception_backtrace.join("\n")
       end
     end
 

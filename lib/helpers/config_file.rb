@@ -4,7 +4,8 @@ require 'yaml'
 
 module ConfigFile
   def ConfigFile.get_path
-    "#{Dir.pwd}/config/config.yaml.erb"
+    root = Pathname.new(__FILE__).parent.parent.parent
+    (root + 'config' + 'config.yaml.erb').to_s
   end
 
   def ConfigFile.read
