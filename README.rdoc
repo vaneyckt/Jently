@@ -23,9 +23,13 @@ On the Configure build screen of your job, you'll want to check the 'This build 
 
 http://imgur.com/5Q3iA.png
 
-Further down on the Configure build screen you can specify your Source Code Management settings. Make sure that your branch specifier is set to '$branch' and that your repository url is set to '$repository'. It should look like this:
+Further down on the Configure build screen you can specify your Source Code Management settings. Make sure that your branch specifier is set to '$branch' and that your repository url is set to '$repository'. Furthermore, you have to specify the Refspec for pull-requests in "Advanced..." settings:
 
-http://imgur.com/2a2A5.png
+    +refs/pull/*:refs/remotes/origin/pr/*
+
+It should look like this:
+
+http://imgur.com/LbdKFTY.png
 
 === Downloading Jently
 

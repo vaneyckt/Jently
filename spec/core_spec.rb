@@ -82,7 +82,6 @@ describe Core do
       ConfigFile.stub(:read).and_return(:jenkins_job_timeout_seconds => jenkins_timeout)
       Github.stub(:set_pull_request_status)
       PullRequestsData.stub(:read).and_return(pull_request_id => pull_request)
-      Git.stub(:setup_testing_branch)
       Jenkins.stub(:wait_for_idle_executor)
       Jenkins.stub(:start_job).and_return(job_id)
       Jenkins.stub(:wait_on_job).and_return(job_state)
@@ -96,12 +95,6 @@ describe Core do
     end
 
     context 'when the pull request is mergeable' do
-      it 'tells Git to set up the testing branch' do
-        Git.should_receive(:setup_testing_branch).with(pull_request)
-
-        Core.test_pull_request(pull_request_id)
-      end
-
       it 'waits for an idle executor on Jenkins' do
         Jenkins.should_receive(:wait_for_idle_executor)
 

@@ -31,7 +31,6 @@ GEM
     rspec-expectations (2.13.0)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.13.1)
-    systemu (2.5.2)
     webmock (1.11.0)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
@@ -48,5 +47,4 @@ DEPENDENCIES
   octokit
   rake
   rspec
-  systemu
   webmock
