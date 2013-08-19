@@ -5,7 +5,6 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require './lib/git.rb'
 require './lib/core.rb'
 require './lib/github.rb'
 require './lib/jenkins.rb'

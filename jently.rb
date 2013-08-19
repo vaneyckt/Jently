@@ -5,7 +5,6 @@ require 'pathname'
 lib = Pathname.new(__FILE__).parent.join('lib').to_s
 $: << lib
 
-require 'git'
 require 'core'
 require 'github'
 require 'jenkins'
