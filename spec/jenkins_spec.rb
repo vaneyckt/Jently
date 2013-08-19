@@ -85,12 +85,11 @@ describe Jenkins do
   describe '.start_job' do
     let(:pull_request_id) { 123 }
     let(:jenkins_job_name) { 'job_name' }
-    let(:testing_branch_name) { 'branch_name' }
+    let(:testing_branch_name) { "origin/pr/#{pull_request_id}/merge" }
     let(:github_ssh_repository) { 'respository' }
 
     let(:config_data) { { :jenkins_url           => jenkins_url,
                           :jenkins_job_name      => jenkins_job_name,
-                          :testing_branch_name   => testing_branch_name,
                           :github_ssh_repository => github_ssh_repository } }
 
     let(:api_url) { "#{jenkins_url}/job/#{jenkins_job_name}/buildWithParameters" }
