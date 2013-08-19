@@ -10,20 +10,20 @@ describe Jenkins do
   end
 
   describe '.get_nb_of_idle_executors' do
-    let(:api_url)        { "#{jenkins_url}/api/json?depth=1&tree=assignedLabels%5BidleExecutors%5D&random=#{Time.now.to_i}" }
+    let(:api_url)        { "#{jenkins_url}/api/json" }
     let(:config_data)    { { :jenkins_url => jenkins_url } }
     let(:idle_executors) { 5 }
     let(:json_response)  { '{"assignedLabels": { "0": {"idleExecutors": ' + idle_executors.to_s + '} } }' }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
-      stub_request(:get, api_url).to_return(:status => 200, :body => json_response, :headers => {})
+      stub_request(:get, /\A#{api_url}.*/).to_return(:status => 200, :body => json_response, :headers => {})
     end
 
     it 'sends a GET request to the Jenkins api' do
       thr = Thread.new do
         Jenkins.get_nb_of_idle_executors
-        WebMock.should have_requested(:get, api_url)
+        WebMock.should have_requested(:get, /#{api_url}.*/)
       end
 
       thr.join(5).should_not be_nil
@@ -38,7 +38,7 @@ describe Jenkins do
         thr = Thread.new do
           config_data.merge!(:jenkins_login => jenkins_login, :jenkins_password => jenkins_password)
           Jenkins.get_nb_of_idle_executors
-          WebMock.should have_requested(:get, api_url)
+          WebMock.should have_requested(:get, /#{api_url}.*/)
         end
 
         thr.join(5).should_not be_nil
@@ -57,7 +57,7 @@ describe Jenkins do
       let(:request_error) { StandardError.new('some faraday failure') }
 
       before do
-        stub_request(:get, api_url).to_raise(request_error).then.
+        stub_request(:get, /\A#{api_url}.*/).to_raise(request_error).then.
           to_return(:status => 200, :body => json_response, :headers => {})
       end
 
@@ -74,7 +74,7 @@ describe Jenkins do
         thr = Thread.new do
           Jenkins.should_receive(:sleep).with(5)
           Jenkins.get_nb_of_idle_executors
-          WebMock.should have_requested(:get, api_url).twice
+          WebMock.should have_requested(:get, /#{api_url}.*/).twice
         end
 
         thr.join(5).should_not be_nil
