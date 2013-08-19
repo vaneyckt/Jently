@@ -1,7 +1,7 @@
 module Core
   def Core.test_pull_request(pull_request_id)
     begin
-      config = ConfigFile.read
+      config       = ConfigFile.read
       pull_request = PullRequestsData.read[pull_request_id]
 
       if pull_request[:mergeable] == false
@@ -14,7 +14,7 @@ module Core
         thr = Thread.new do
           Github.set_pull_request_status(pull_request_id, {:status => 'pending', :description => 'Started work on pull request.'})
           job_id = Jenkins.start_job(pull_request_id)
-          state = Jenkins.wait_on_job(job_id)
+          state  = Jenkins.wait_on_job(job_id)
           Github.set_pull_request_status(pull_request_id, state)
         end
 

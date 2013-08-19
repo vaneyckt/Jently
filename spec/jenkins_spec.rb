@@ -10,35 +10,35 @@ describe Jenkins do
   end
 
   describe '.get_nb_of_idle_executors' do
-    let(:api_url) { "#{jenkins_url}/api/json?depth=1&tree=assignedLabels%5BidleExecutors%5D&random=#{Time.now.to_i}" }
-    let(:config_data) { { :jenkins_url => jenkins_url } }
+    let(:api_url)        { "#{jenkins_url}/api/json" }
+    let(:config_data)    { { :jenkins_url => jenkins_url } }
     let(:idle_executors) { 5 }
-    let(:json_response) { '{"assignedLabels": { "0": {"idleExecutors": ' + idle_executors.to_s + '} } }' }
+    let(:json_response)  { '{"assignedLabels": { "0": {"idleExecutors": ' + idle_executors.to_s + '} } }' }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
-      stub_request(:get, api_url).to_return(:status => 200, :body => json_response, :headers => {})
+      stub_request(:get, /\A#{api_url}.*/).to_return(:status => 200, :body => json_response, :headers => {})
     end
 
     it 'sends a GET request to the Jenkins api' do
       thr = Thread.new do
         Jenkins.get_nb_of_idle_executors
-        WebMock.should have_requested(:get, api_url)
+        WebMock.should have_requested(:get, /#{api_url}.*/)
       end
 
       thr.join(5).should_not be_nil
     end
 
     context 'when configured to use an authorized jenkins user' do
-      let(:jenkins_login) { 'jenkins_login' }
+      let(:jenkins_login)    { 'jenkins_login' }
       let(:jenkins_password) { 'jenkins_password' }
-      let(:jenkins_url) { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
+      let(:jenkins_url)      { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
 
       it 'sends a request with basic auth credentials' do
         thr = Thread.new do
           config_data.merge!(:jenkins_login => jenkins_login, :jenkins_password => jenkins_password)
           Jenkins.get_nb_of_idle_executors
-          WebMock.should have_requested(:get, api_url)
+          WebMock.should have_requested(:get, /#{api_url}.*/)
         end
 
         thr.join(5).should_not be_nil
@@ -57,7 +57,7 @@ describe Jenkins do
       let(:request_error) { StandardError.new('some faraday failure') }
 
       before do
-        stub_request(:get, api_url).to_raise(request_error).then.
+        stub_request(:get, /\A#{api_url}.*/).to_raise(request_error).then.
           to_return(:status => 200, :body => json_response, :headers => {})
       end
 
@@ -74,7 +74,7 @@ describe Jenkins do
         thr = Thread.new do
           Jenkins.should_receive(:sleep).with(5)
           Jenkins.get_nb_of_idle_executors
-          WebMock.should have_requested(:get, api_url).twice
+          WebMock.should have_requested(:get, /#{api_url}.*/).twice
         end
 
         thr.join(5).should_not be_nil
@@ -83,9 +83,9 @@ describe Jenkins do
   end
 
   describe '.start_job' do
-    let(:pull_request_id) { 123 }
-    let(:jenkins_job_name) { 'job_name' }
-    let(:testing_branch_name) { "origin/pr/#{pull_request_id}/merge" }
+    let(:pull_request_id)       { 123 }
+    let(:jenkins_job_name)      { 'job_name' }
+    let(:testing_branch_name)   { "origin/pr/#{pull_request_id}/merge" }
     let(:github_ssh_repository) { 'respository' }
 
     let(:config_data) { { :jenkins_url           => jenkins_url,
@@ -93,7 +93,7 @@ describe Jenkins do
                           :github_ssh_repository => github_ssh_repository } }
 
     let(:api_url) { "#{jenkins_url}/job/#{jenkins_job_name}/buildWithParameters" }
-    let(:job_id) { "#{pull_request_id}-123456" }
+    let(:job_id)  { "#{pull_request_id}-123456" }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
@@ -121,9 +121,9 @@ describe Jenkins do
     end
 
     context 'when configured to use an authorized jenkins user' do
-      let(:jenkins_login) { 'jenkins_login' }
+      let(:jenkins_login)    { 'jenkins_login' }
       let(:jenkins_password) { 'jenkins_password' }
-      let(:jenkins_url) { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
+      let(:jenkins_url)      { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
 
       it 'sends a request with basic auth credentials' do
         thr = Thread.new do
@@ -167,16 +167,16 @@ describe Jenkins do
 
   describe '.get_job_state' do
     let(:jenkins_job_name) { 'job_name' }
-    let(:api_url) { "#{jenkins_url}/job/#{jenkins_job_name}/api/json" }
-    let(:config_data) { { :jenkins_url => jenkins_url, :jenkins_job_name => jenkins_job_name } }
+    let(:api_url)          { "#{jenkins_url}/job/#{jenkins_job_name}/api/json" }
+    let(:config_data)      { { :jenkins_url => jenkins_url, :jenkins_job_name => jenkins_job_name } }
 
     let(:successful_build_url) { 'http://successful.build.url/' }
-    let(:unstable_build_url) { 'http://unstable.build.url/' }
-    let(:failed_build_url) { 'http://failed.build.url/' }
+    let(:unstable_build_url)   { 'http://unstable.build.url/' }
+    let(:failed_build_url)     { 'http://failed.build.url/' }
 
     let(:successful_job_id) { '123' }
-    let(:unstable_job_id) { '456' }
-    let(:failed_job_id) { '789' }
+    let(:unstable_job_id)   { '456' }
+    let(:failed_job_id)     { '789' }
 
     def generate_json_for_build(job_id, result_status, url)
       { :result => result_status,
@@ -209,9 +209,9 @@ describe Jenkins do
     end
 
     context 'when configured to use an authorized jenkins user' do
-      let(:jenkins_login) { 'jenkins_login' }
+      let(:jenkins_login)    { 'jenkins_login' }
       let(:jenkins_password) { 'jenkins_password' }
-      let(:jenkins_url) { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
+      let(:jenkins_url)      { "http://#{jenkins_login}:#{jenkins_password}@valid.jenkins.url" }
 
       it 'sends a request with basic auth credentials' do
         thr = Thread.new do
@@ -299,9 +299,9 @@ describe Jenkins do
 
   describe '.wait_on_job' do
     let(:jenkins_polling_interval_seconds) { 10 }
-    let(:config_data) { { :jenkins_polling_interval_seconds => jenkins_polling_interval_seconds } }
-    let(:job_id) { '456' }
-    let(:state) { 'valid state' }
+    let(:config_data)                      { { :jenkins_polling_interval_seconds => jenkins_polling_interval_seconds } }
+    let(:job_id)                           { '456' }
+    let(:state)                            { 'valid state' }
 
     before do
       ConfigFile.stub(:read).and_return( config_data )
