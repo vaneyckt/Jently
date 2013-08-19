@@ -1,21 +1,21 @@
 require 'spec_helper'
 
 describe Git do
-  let(:id) { '123' }
-  let(:head_sha) { 'abc123' }
-  let(:base_sha) { 'cde456' }
-  let(:login) { 'rspec_github_login' }
-  let(:password) { 'rspec_github_password' }
+  let(:id)          { '123' }
+  let(:head_sha)    { 'abc123' }
+  let(:base_sha)    { 'cde456' }
+  let(:login)       { 'rspec_github_login' }
+  let(:password)    { 'rspec_github_password' }
   let(:oauth_token) { 'rspec_github_oauth_token' }
   let(:branch_name) { 'some_crazy_branch' }
 
-  let(:repo_id) { "rspec_user/rspec_repo" }
+  let(:repo_id)   { "rspec_user/rspec_repo" }
   let(:repos_dir) { File.join('rspec_repositories') }
   let(:repo_path) { File.join(repos_dir, 'rspec_repo') }
 
   let(:merge_ref) { "refs/pull/#{id}/merge" }
 
-  let(:pull_request) { { :id => id, :head_sha => head_sha, :base_sha => base_sha } }
+  let(:pull_request)   { { :id => id, :head_sha => head_sha, :base_sha => base_sha } }
   let(:system_results) { [true, 'stdout', 'stderr'] }
 
   before do
@@ -24,8 +24,7 @@ describe Git do
     Repository.stub(:get_dir).and_return(repos_dir)
 
     Git.stub(:systemu).and_return(system_results)
-    ConfigFile.stub(:read).and_return(:github_login => login, :github_password => password,
-                                      :testing_branch_name => branch_name)
+    ConfigFile.stub(:read).and_return(:github_login => login, :github_password => password, :testing_branch_name => branch_name)
     Logger.stub(:log)
   end
 
