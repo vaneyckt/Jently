@@ -3,13 +3,7 @@ require 'erb'
 require 'yaml'
 
 module ConfigFile
-  def ConfigFile.get_path
-    root = Pathname.new(__FILE__).parent.parent.parent
-    (root + 'config' + 'config.yaml.erb').to_s
-  end
-
-  def ConfigFile.read
-    path = get_path
+  def ConfigFile.read(path)
     if File.exists?(path)
       raw_data      = IO.read path
       erbified_data = ERB.new(raw_data).result
