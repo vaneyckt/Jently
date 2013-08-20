@@ -1,7 +1,7 @@
 module Core
   def Core.test_pull_request(pull_request_id)
     begin
-      config       = ConfigFile.read
+      config       = ConfigFile.read(Jently.config_filename)
       pull_request = PullRequestsData.read[pull_request_id]
 
       if pull_request[:mergeable] == false
@@ -23,7 +23,7 @@ module Core
       end
     rescue => e
       Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'})
-      Logger.log('Error when testing pull request', e)
+      Log.log('Error when testing pull request', e)
     end
   end
 

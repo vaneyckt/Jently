@@ -1,15 +1,18 @@
-module Logger
-  def Logger.get_path
-    root = Pathname.new(__FILE__).parent.parent.parent
-    (root + 'log').to_s
+require 'logger'
+
+module Log
+  class << self
+    LOGGER = Logger.new(STDOUT)
+
+    def log(message, exception=nil)
+      exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
+      message += exception_output.to_s
+      method = exception ? :fatal : :info
+      LOGGER.send(method, message)
+    end
   end
 
-  def Logger.log(message, exception = nil)
-    exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
-    File.open(get_path, 'a') { |file| file << log_prefix + message + exception_output.to_s + " \n\n" }
-  end
-
-  def Logger.log_prefix
-    "#{Time.now} (#{Time.now.to_i})\n======================================\n"
-  end
+#  def Logger.log_prefix
+#    "#{Time.now} (#{Time.now.to_i})\n======================================\n"
+#  end
 end

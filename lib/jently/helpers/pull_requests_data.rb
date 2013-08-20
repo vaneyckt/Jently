@@ -2,7 +2,7 @@ require 'yaml'
 
 module PullRequestsData
   def PullRequestsData.get_path
-    root = Pathname.new(__FILE__).parent.parent.parent
+    root = Pathname.new(__FILE__).parent.parent.parent.parent
     (root + 'db' + 'pull_requests.yaml').to_s
   end
 
@@ -81,7 +81,7 @@ module PullRequestsData
 
   def PullRequestsData.get_pull_request_id_to_test
     data   = read
-    config = ConfigFile.read
+    config = ConfigFile.read(Jently.config_filename)
 
     pull_requests_that_require_testing = data.values.select { |pull_request| pull_request[:is_test_required] && (config[:whitelist_branches].empty? || config[:whitelist_branches].include?(pull_request[:base_branch])) }
     pull_request_id_to_test            = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request| pull_request[:priority] }[:id]

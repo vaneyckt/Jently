@@ -9,7 +9,7 @@ module Github
       open_pull_requests     = client.pull_requests(repository_id, 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
     rescue => e
-      Logger.log('Error when getting open pull requests ids', e)
+      Log.log('Error when getting open pull requests ids', e)
       sleep 5
       retry
     end
@@ -38,7 +38,7 @@ module Github
       data[:base_sha]    = client.commits(repository_id, data[:base_branch]).first.sha
       data
     rescue => e
-      Logger.log('Error when getting pull request', e)
+      Log.log('Error when getting pull request', e)
       sleep 5
       retry
     end
@@ -62,14 +62,14 @@ module Github
         PullRequestsData.reset(pull_request_id)
       end
     rescue => e
-      Logger.log('Error when setting pull request status', e)
+      Log.log('Error when setting pull request status', e)
       sleep 5
       retry
     end
   end
 
   def Github.new_client
-    config = ConfigFile.read
+    config = ConfigFile.read(Jently.config_filename)
     if config.has_key?(:github_api_endpoint)
       Octokit.configure do |c|
         c.api_endpoint = config[:github_api_endpoint]
