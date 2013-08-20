@@ -2,23 +2,54 @@
 
 # add lib directory to LOAD_PATH
 require 'pathname'
-lib = Pathname.new(__FILE__).parent.join('lib').to_s
+lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
 $: << lib
 
-require 'core'
-require 'github'
-require 'jenkins'
-require 'helpers/logger'
-require 'helpers/repository'
-require 'helpers/config_file'
-require 'helpers/pull_requests_data'
+require 'optparse'
+require 'ostruct'
+require 'jently/core'
+require 'jently/github'
+require 'jently/jenkins'
+require 'jently/helpers/logger'
+require 'jently/helpers/repository'
+require 'jently/helpers/config_file'
+require 'jently/helpers/pull_requests_data'
+
+class JentlyOptions
+  def self.parse(args)
+    options = OpenStruct.new
+    opts = OptionParser.new do |opts|
+      opts.on('-c', '--config FILE', 'Location of config file') do |file|
+        options.config_filename = Pathname.new(file)
+      end
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+    end
+
+    opts.parse!(args)
+
+    options.config_filename ||= Pathname.new(Dir.pwd).join('config.yaml')
+
+    if not options.config_filename.exist?
+      puts "The specified config file #{options.config_filename} doesn't exist."
+      exit 2
+    end
+
+    options
+  end
+end
+
+Jently = JentlyOptions.parse(ARGV)
 
 while true
   begin
-    config = ConfigFile.read
+    Log.log("Reading config from #{Jently.config_filename}")
+    config = ConfigFile.read(Jently.config_filename)
     Core.poll_pull_requests_and_queue_next_job
     sleep config[:github_polling_interval_seconds]
   rescue => e
-    Logger.log('Error in main loop', e)
+    Log.log('Error in main loop', e)
   end
 end
