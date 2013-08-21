@@ -1,8 +1,20 @@
-require 'daemons'
+#!/usr/bin/env ruby
 
-# http://daemons.rubyforge.org/classes/Daemons.html#M000005
-pwd = Dir.pwd
-Daemons.run_proc('jently') do
-  Dir.chdir(pwd)
-  exec "ruby jently.rb"
+require 'daemons'
+require 'pathname'
+
+root    = Pathname.new(__FILE__).parent.expand_path
+options = {
+  :dir_mode => :script,
+  :ARGV     => ARGV
+}
+jently  = root.join('jently').to_s
+
+if piddir = ENV['PIDDIR']
+  options.merge!({
+    :dir_mode => :normal,
+    :dir      => piddir
+  })
 end
+
+Daemons.run(jently, options)
