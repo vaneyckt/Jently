@@ -33,7 +33,7 @@ class JentlyOptions
     options.config_filename ||= Pathname.new(Dir.pwd).join('config.yaml')
 
     if not options.config_filename.exist?
-      puts "The specified config file #{options.config_filename} doesn't exist."
+      puts "The config file #{options.config_filename} doesn't exist."
       exit 2
     end
 
