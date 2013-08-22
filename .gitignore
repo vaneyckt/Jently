@@ -1,5 +1,6 @@
 log
 jentlyd.pid
+jentlyd.output
 .ruby-version
 .ruby-gemset
 db/*
