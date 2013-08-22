@@ -43,7 +43,7 @@ end
 
 Jently = JentlyOptions.parse(ARGV)
 
-while true
+loop do
   begin
     Log.log("Reading config from #{Jently.config_filename}")
     config = ConfigFile.read(Jently.config_filename)
