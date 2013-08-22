@@ -1,18 +1,19 @@
 require 'logger'
 
 module Log
-  class << self
-    LOGGER = Logger.new(STDOUT)
-
-    def log(message, exception=nil)
-      exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
-      message += exception_output.to_s
-      method = exception ? :fatal : :info
-      LOGGER.send(method, message)
-    end
+  LOGGER = Logger.new(STDOUT)
+  LOGGER.formatter = proc do |severity, datetime, progname, msg|
+    header = "#{datetime} #{severity}:\n"
+    header << '=' * header.strip.size
+    header << "\n#{msg}\n"
   end
 
-#  def Logger.log_prefix
-#    "#{Time.now} (#{Time.now.to_i})\n======================================\n"
-#  end
+  module_function
+
+  def log(message, exception=nil)
+    exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
+    message += exception_output.to_s
+    method = exception ? :fatal : :info
+    LOGGER.send(method, message)
+  end
 end
