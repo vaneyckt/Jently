@@ -47,8 +47,12 @@ loop do
   begin
     Log.log("Reading config from #{Jently.config_filename}")
     config = ConfigFile.read(Jently.config_filename)
+
     Core.poll_pull_requests_and_queue_next_job
-    sleep config[:github_polling_interval_seconds]
+
+    interval = config[:github_polling_interval_seconds]
+    Log.log("Sleeping for #{interval}")
+    sleep interval
   rescue => e
     Log.log('Error in main loop', e)
   end
