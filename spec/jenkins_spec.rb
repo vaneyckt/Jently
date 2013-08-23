@@ -6,7 +6,7 @@ describe Jenkins do
 
   before do
     Jenkins.stub(:sleep) # don't actually want to sleep during our test runs
-    Logger.stub(:log)
+    Log.stub(:log)
   end
 
   describe '.get_nb_of_idle_executors' do
@@ -63,7 +63,7 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*idle executors.*/, request_error)
+          Log.should_receive(:log).with(/Error.*idle executors.*/, request_error)
           Jenkins.get_nb_of_idle_executors
         end
 
@@ -146,7 +146,7 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*starting job.*/, request_error)
+          Log.should_receive(:log).with(/Error.*starting job.*/, request_error)
           Jenkins.start_job(pull_request_id)
         end
 
@@ -278,7 +278,7 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*job state/, request_error)
+          Log.should_receive(:log).with(/Error.*job state/, request_error)
           Jenkins.get_job_state(successful_job_id)
         end
 

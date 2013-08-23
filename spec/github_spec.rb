@@ -8,7 +8,7 @@ describe Github do
 
   before do
     Github.stub(:sleep)
-    Logger.stub(:log)
+    Log.stub(:log)
     ConfigFile.stub(:read).and_return(config_data)
     Repository.stub(:get_id).and_return(repo_id)
   end
@@ -56,7 +56,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with(/Error.*open pull request.*ids.*/, octokit_error)
+          Log.should_receive(:log).with(/Error.*open pull request.*ids.*/, octokit_error)
 
           Github.get_open_pull_requests_ids
         end
@@ -159,7 +159,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with('Error when getting pull request', octokit_error)
+          Log.should_receive(:log).with('Error when getting pull request', octokit_error)
 
           Github.get_pull_request(pull_request_id)
         end
@@ -274,7 +274,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with('Error when setting pull request status', octokit_error)
+          Log.should_receive(:log).with('Error when setting pull request status', octokit_error)
 
           Github.set_pull_request_status(pull_request_id, success_state)
         end
@@ -333,7 +333,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with(/Error.*open pull request.*ids.*/, octokit_error)
+          Log.should_receive(:log).with(/Error.*open pull request.*ids.*/, octokit_error)
 
           Github.get_open_pull_requests_ids
         end
@@ -436,7 +436,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with('Error when getting pull request', octokit_error)
+          Log.should_receive(:log).with('Error when getting pull request', octokit_error)
 
           Github.get_pull_request(pull_request_id)
         end
@@ -551,7 +551,7 @@ describe Github do
         end
 
         it 'logs the failure' do
-          Logger.should_receive(:log).with('Error when setting pull request status', octokit_error)
+          Log.should_receive(:log).with('Error when setting pull request status', octokit_error)
 
           Github.set_pull_request_status(pull_request_id, success_state)
         end

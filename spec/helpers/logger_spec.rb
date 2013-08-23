@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Logger do
+describe Log do
   describe '.log' do
     let(:log_path) { File.join(Dir.pwd, 'rspec_log') }
 
     before do
-      Logger.stub(:get_path).and_return(log_path)
+      Log.stub(:get_path).and_return(log_path)
       File.delete(log_path) if File.exists?(log_path)
     end
 
@@ -21,7 +21,7 @@ describe Logger do
 
       it 'logs the exception message and backtrace' do
         exception.stub(:backtrace).and_return(exception_backtrace)
-        Logger.log('anything', exception)
+        Log.log('anything', exception)
         results = File.read(log_path)
         results.should include exception_message
         results.should include exception_backtrace.join("\n")
@@ -31,7 +31,7 @@ describe Logger do
     context 'when no exception is specified' do
       it 'logs just the specified log message' do
         message = "only this should appear"
-        Logger.log(message)
+        Log.log(message)
         results = File.read(log_path)
         results.should match /.*#{message} \n\n\z/
       end

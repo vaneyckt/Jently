@@ -85,7 +85,7 @@ describe Core do
       Jenkins.stub(:wait_for_idle_executor)
       Jenkins.stub(:start_job).and_return(job_id)
       Jenkins.stub(:wait_on_job).and_return(job_state)
-      Logger.stub(:log)
+      Log.stub(:log)
     end
 
     it 'retrieves the stored pull request for the specified pull request id' do
@@ -169,7 +169,7 @@ describe Core do
         end
 
         it 'logs the error' do
-          Logger.should_receive(:log).with(anything(), exception)
+          Log.should_receive(:log).with(anything(), exception)
 
           Core.test_pull_request(pull_request_id)
         end
