@@ -1,7 +1,12 @@
 module Core
-  def Core.test_pull_request(pull_request_id)
+  module_function
+
+  def config
+    ConfigFile.read(Jently.config_filename)
+  end
+
+  def test_pull_request(pull_request_id)
     begin
-      config       = ConfigFile.read(Jently.config_filename)
       pull_request = PullRequestsData.read[pull_request_id]
 
       if pull_request[:mergeable] == false
@@ -27,7 +32,7 @@ module Core
     end
   end
 
-  def Core.poll_pull_requests_and_queue_next_job
+  def poll_pull_requests_and_queue_next_job
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
