@@ -5,12 +5,12 @@ describe Log do
     let(:log_path) { File.join(Dir.pwd, 'rspec_log') }
 
     before do
-      Log.stub(:get_path).and_return(log_path)
-      File.delete(log_path) if File.exists?(log_path)
+      Jently.log_path = log_path
     end
 
     after do
-      File.delete(log_path) if File.exists?(log_path)
+      Jently.log_path
+      #File.delete(log_path) if File.exists?(log_path)
     end
 
     context 'when an exception is specified' do
@@ -22,6 +22,7 @@ describe Log do
       it 'logs the exception message and backtrace' do
         exception.stub(:backtrace).and_return(exception_backtrace)
         Log.log('anything', exception)
+
         results = File.read(log_path)
         results.should include exception_message
         results.should include exception_backtrace.join("\n")
@@ -33,7 +34,8 @@ describe Log do
         message = "only this should appear"
         Log.log(message)
         results = File.read(log_path)
-        results.should match /.*#{message} \n\n\z/
+
+        results.should match /^#{message}\n\z/
       end
     end
   end

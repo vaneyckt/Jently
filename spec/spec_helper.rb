@@ -8,7 +8,9 @@
 require 'pathname'
 lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
 $: << lib
+
 require 'ostruct'
+Jently = OpenStruct.new
 
 require 'jently/core'
 require 'jently/github'
@@ -33,4 +35,3 @@ RSpec.configure do |config|
   config.order = 'random'
 end
 
-Jently = OpenStruct.new
