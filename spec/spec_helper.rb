@@ -10,7 +10,8 @@ lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
 $: << lib
 
 require 'ostruct'
-Jently = OpenStruct.new
+require 'tempfile'
+Jently = OpenStruct.new(:log_path => Tempfile.new('rspec'))
 
 require 'jently/core'
 require 'jently/github'
