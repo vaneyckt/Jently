@@ -54,6 +54,8 @@ gem install jently
 
 ### Setup the configuration file
 
+**FIXME: Provide a nice way for people to set this up. Prompt?**
+
 A configuration file can be found in the root of the gem. 
 
 There are a few configuration details that you will need to specify before running Jently. The comments in the file should hopefully make it easy to get everything set up right.
