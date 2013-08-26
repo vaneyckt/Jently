@@ -1,12 +1,14 @@
+#!/usr/bin/env ruby
+
 source 'https://rubygems.org'
 
-gem 'json'
-gem 'rspec'
-gem 'webmock'
+gemspec
 
-gem 'rake'
-gem 'jently'
-gem 'octokit'
-gem 'daemons'
-gem 'faraday'
-gem 'faraday_middleware'
+gem 'json'
+
+group :development do
+  gem 'webmock'
+  gem 'rspec'
+  gem 'rake'
+  gem 'colorize'
+end

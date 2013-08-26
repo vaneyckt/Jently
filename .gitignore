@@ -5,3 +5,4 @@ jentlyd.output
 .ruby-gemset
 db/*
 repositories/*
+pkg/
