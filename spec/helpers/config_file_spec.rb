@@ -56,12 +56,20 @@ describe ConfigFile do
       end
 
       it 'validates there are values for all config settings' do
-        stub_config.merge!({:github_login => nil})
+        stub_config.merge!({:github_login => nil, :jenkins_password => ""})
         File.open(config_path, 'w'){|file| file << stub_config.to_yaml}
 
         lambda {
           ConfigFile.read(config_path)
         }.should raise_error(NameError, /aren't set/)
+
+        lambda {
+          ConfigFile.read(config_path)
+        }.should raise_error(NameError, /github_login/)
+
+        lambda {
+          ConfigFile.read(config_path)
+        }.should raise_error(NameError, /jenkins_password/)
       end
     end
 

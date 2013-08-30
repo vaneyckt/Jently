@@ -41,6 +41,7 @@ module ConfigFile
     options.each do |option|
       no_key  << option if not config.include?(option)
       not_set << option if not config[option]
+      not_set << option if config[option].respond_to?(:empty?) && config[option].empty?
     end
 
     if !no_key.empty? || !not_set.empty?
