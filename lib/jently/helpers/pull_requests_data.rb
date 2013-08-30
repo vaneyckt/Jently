@@ -1,23 +1,24 @@
 require 'yaml'
 
 module PullRequestsData
-  def PullRequestsData.get_path
+  module_function
+  def get_path
     root = Pathname.new(__FILE__).parent.parent.parent.parent
     (root + 'db' + 'pull_requests.yaml').to_s
   end
 
-  def PullRequestsData.read
+  def read
     path = get_path
     data = YAML.load(File.read(path)) if File.exists?(path)
     data || {}
   end
 
-  def PullRequestsData.write(data)
+  def write(data)
     path = get_path
     File.open(path, 'w') { |f| YAML.dump(data, f) }
   end
 
-  def PullRequestsData.update(pull_request)
+  def update(pull_request)
     data                                       = read
     data[pull_request[:id]]                    = pull_request
     data[pull_request[:id]][:priority]         = get_new_priority(pull_request)
@@ -25,27 +26,27 @@ module PullRequestsData
     write(data)
   end
 
-  def PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
+  def remove_dead_pull_requests(open_pull_requests_ids)
     data                   = read
     dead_pull_requests_ids = data.keys - open_pull_requests_ids
     dead_pull_requests_ids.each { |id| data.delete(id) }
     write(data)
   end
 
-  def PullRequestsData.update_status(pull_request_id, status)
+  def update_status(pull_request_id, status)
     data                           = read
     data[pull_request_id][:status] = status
     write(data)
   end
 
-  def PullRequestsData.reset(pull_request_id)
+  def reset(pull_request_id)
     data                                     = read
     data[pull_request_id][:priority]         = -1
     data[pull_request_id][:is_test_required] = false
     write(data)
   end
 
-  def PullRequestsData.outdated_success_status?(pull_request)
+  def outdated_success_status?(pull_request)
     data   = read
     is_new = !data.has_key?(pull_request[:id])
 
@@ -55,13 +56,13 @@ module PullRequestsData
                                   data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
   end
 
-  def PullRequestsData.get_new_priority(pull_request)
+  def get_new_priority(pull_request)
     data     = read
     is_new   = !data.has_key?(pull_request[:id])
     priority = (is_new) ? 0 : (data[pull_request[:id]][:priority] + 1)
   end
 
-  def PullRequestsData.test_required?(pull_request)
+  def test_required?(pull_request)
     return false if pull_request[:merged]
 
     data   = read
@@ -79,7 +80,7 @@ module PullRequestsData
     is_test_required = is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated)
   end
 
-  def PullRequestsData.get_pull_request_id_to_test
+  def get_pull_request_id_to_test
     data   = read
     config = ConfigFile.read(Jently.config_filename)
 
