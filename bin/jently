@@ -22,6 +22,9 @@ class JentlyOptions
       opts.on('-c', '--config FILE', 'Location of config file') do |file|
         options.config_filename = Pathname.new(file)
       end
+      opts.on('-d', '--data DIRECTORY', 'Directory for caching pull request data') do |directory|
+        options.data_directory
+      end
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
@@ -31,9 +34,17 @@ class JentlyOptions
     opts.parse!(args)
 
     options.config_filename ||= Pathname.new(Dir.pwd).join('config.yaml')
+    options.data_directory  ||= Pathname.new(Dir.pwd).join('db')
+    options.database_path   = options.data_directory.join('pull_requests.yaml')
 
     if not options.config_filename.exist?
       puts "The config file #{options.config_filename} doesn't exist."
+      puts "Exiting."
+      exit 2
+    end
+
+    if not options.data_directory.writable?
+      puts "The specified data directory #{options.data_directory} is not writable."
       puts "Exiting."
       exit 2
     end
