@@ -34,6 +34,15 @@ class JentlyOptions
 
     if not options.config_filename.exist?
       puts "The config file #{options.config_filename} doesn't exist."
+      puts "Exiting."
+      exit 2
+    end
+
+    begin
+      ConfigFile.read(options.config_filename)
+    rescue NameError => e
+      puts e.message
+      puts "Exiting."
       exit 2
     end
 
