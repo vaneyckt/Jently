@@ -22,8 +22,8 @@ class JentlyOptions
       opts.on('-c', '--config FILE', 'Location of config file') do |file|
         options.config_filename = Pathname.new(file)
       end
-      opts.on('-d', '--data DIRECTORY', 'Directory for caching pull request data') do |directory|
-        options.data_directory
+      opts.on('-d', '--data DIRECTORY', 'Directory for caching pull request data') do |dir|
+        options.data_directory = Pathname.new(dir)
       end
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
