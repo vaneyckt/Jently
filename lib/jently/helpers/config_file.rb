@@ -35,9 +35,21 @@ module ConfigFile
       :jenkins_polling_interval_seconds,
     ]
 
+    no_key  = []
+    not_set = []
+
     options.each do |option|
-      raise NameError, "#{option} doesn't exist in config" if not config.include?(option)
-      raise NameError, "#{option} isn't set in config" if not config[option]
+      no_key  << option if not config.include?(option)
+      not_set << option if not config[option]
     end
+
+    if !no_key.empty? || !not_set.empty?
+      message = ""
+      message << "These config options don't exist: #{no_key.join(', ')}\n" unless no_key.empty?
+      message << "These config options aren't set: #{not_set.join(', ')}\n" unless not_set.empty?
+      raise NameError, message
+    end
+
+    true
   end
 end

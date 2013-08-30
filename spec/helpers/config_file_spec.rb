@@ -39,7 +39,7 @@ describe ConfigFile do
         File.open(config_path, 'w'){|file| file.write( YAML.dump(nil) ) }
         lambda {
           ConfigFile.read(config_path)
-        }.should raise_error(NameError, /doesn't exist/)
+        }.should raise_error(NameError, /don't exist/)
       end
     end
 
@@ -61,7 +61,7 @@ describe ConfigFile do
 
         lambda {
           ConfigFile.read(config_path)
-        }.should raise_error(NameError, /isn't set/)
+        }.should raise_error(NameError, /aren't set/)
       end
     end
 
