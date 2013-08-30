@@ -46,7 +46,7 @@ module ConfigFile
     if !no_key.empty? || !not_set.empty?
       message = ""
       message << "These config options don't exist: #{no_key.join(', ')}\n" unless no_key.empty?
-      message << "These config options aren't set: #{not_set.join(', ')}\n" unless not_set.empty?
+      message << "These config options aren't set: #{not_set.join(', ')}\n" unless (not_set - no_key).empty?
       raise NameError, message
     end
 
