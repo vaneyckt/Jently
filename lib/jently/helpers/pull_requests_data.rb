@@ -3,11 +3,11 @@ require 'yaml'
 module PullRequestsData
   module_function
   def path
-    Jently.database_path
+    root = Pathname.new(Jently.database_path)
+    (root + 'pull_requests.yaml')
   end
 
   def read
-    p File.exists?(path)
     data = YAML.load(File.read(path)) if File.exists?(path)
     data || {}
   end

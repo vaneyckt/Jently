@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe PullRequestsData do
-  let(:datafile_path) { "#{Dir.pwd}/db/rspec_pull_requests.yaml" }
+  let(:datafile_path) { Pathname.new(Dir.mktmpdir).join('rspec_pull_requests.yaml') }
 
   before do
-    PullRequestsData.stub(:get_path).and_return(datafile_path)
+    PullRequestsData.stub(:path).and_return(datafile_path)
     File.delete(datafile_path) if File.exists?(datafile_path)
   end
 
