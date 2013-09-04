@@ -7,6 +7,7 @@ module PullRequestsData
   end
 
   def read
+    p File.exists?(path)
     data = YAML.load(File.read(path)) if File.exists?(path)
     data || {}
   end
