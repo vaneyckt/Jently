@@ -4,21 +4,9 @@ class jently (
   $path     = $jently::params::path,
 ) inherits jently::params {
 
-  file { $path:
-    ensure => present,
-    source => "puppet:///modules/jently/${filename}",
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-  }
-
   package { 'jently':
     ensure   => $version,
-    source   => $path,
     provider => gem,
-    require  => [
-      File[$path],
-    ],
   }
 
   file { '/etc/jently':
@@ -32,6 +20,13 @@ class jently (
     ensure => directory,
     owner  => daemon,
     group  => daemon,
-    mode   => '0644',
+    mode   => '0755',
+  }
+
+  file { '/var/lib/jently':
+    ensure => directory,
+    owner  => daemon,
+    group  => daemon,
+    mode   => '0755',
   }
 }
