@@ -43,11 +43,22 @@ define jently::instance (
       ],
     }
 
+    file { "/var/lib/jently/${name}":
+      ensure  => directory,
+      owner   => daemon,
+      group   => daemon,
+      mode    => '0755',
+      require => [
+        File['/var/lib/jently']
+      ]
+    }
+
     service { "jently-${name}":
       ensure   => running,
       provider => upstart,
       require  => [
-        File["/etc/init/jently-${name}.conf"]
+        File["/etc/init/jently-${name}.conf"],
+        File["/var/lib/jently/${name}"],
       ]
     }
   }
