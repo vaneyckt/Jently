@@ -10,6 +10,7 @@ respawn
 
 <%
   config_path = "/etc/jently/#{@name}.yaml"
+  data_path   = "/var/lib/jently/#{@name}"
   log_path    = "/var/log/jently/#{@name}.log"
 -%>
-exec su - daemon -c 'export PATH="$PATH:/var/lib/gems/1.8/bin" ; jently --config <%= config_path %> >> <%= log_path %> 2>&1'
+exec su - daemon -c 'export PATH="$PATH:/var/lib/gems/1.8/bin" ; jently --config <%= config_path %> --data <%= data_path %> >> <%= log_path %> 2>&1'
