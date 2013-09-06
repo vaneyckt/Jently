@@ -98,6 +98,28 @@ If this is your first run, Jently will start by cloning the specified repository
 - Certain older versions of Ruby have been observed to suffer the occasional hiccup. Ruby 2.0.0-p195 will work perfectly.
 
 
+### Puppet module
+
+There is an example Puppet module in [`dist/`](https://github.com/vaneyckt/Jently/tree/master/dist/puppet-module).
+
+The Puppet module helps you run multiple Jently instances with [Upstart](http://upstart.ubuntu.com/): 
+
+``` puppet
+jently::instance { 'project_name':
+  github_login      => 'example',
+  github_password   => 'hunter2',
+  github_repository => 'git@github.com:example/project_name.git',
+  jenkins_url       => 'http://jenkins.example.org',
+  jenkins_login     => 'example',
+  jenkins_password  => 'hunter2',
+  jenkins_job_name  => 'example_parameterised_build',
+}
+```
+
+Create a new `jently::instance` for every project you want to build. 
+
+If you want to run Jently under Upstart (negating the need for `jentlyd`), try adapting the [example configuration](https://github.com/vaneyckt/Jently/blob/master/dist/puppet-module/jently/templates/jently-init.conf.erb).  
+
 ## Developing
 
 You'll need to clone the Jently repository to your hard drive in order to get started. Do this by running:
