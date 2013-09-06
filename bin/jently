@@ -15,6 +15,8 @@ require 'jently/helpers/repository'
 require 'jently/helpers/config_file'
 require 'jently/helpers/pull_requests_data'
 
+$stdout.sync = true
+
 class JentlyOptions
   def self.parse(args)
     options = OpenStruct.new
