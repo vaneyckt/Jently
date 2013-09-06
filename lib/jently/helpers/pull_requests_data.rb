@@ -3,8 +3,7 @@ require 'yaml'
 module PullRequestsData
   module_function
   def path
-    root = Pathname.new(Jently.database_path)
-    (root + 'pull_requests.yaml')
+    Jently.database_path
   end
 
   def read
