@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = [ "Tom Van Eyck" ]
   s.email       = [ "tomvaneyck@gmail.com" ]
   s.homepage    = "https://github.com/vaneyckt/Jently"
-  s.summary     = %q{Trigger Jenkins builds on GitHub pull requests and update their commit status}
-  s.description = %q{A Ruby app that makes your Jenkins CI automatically run tests on GitHub pull requests and updates their commit status.}
+  s.summary     = "Trigger Jenkins builds on GitHub pull requests and update their commit status"
+  s.description = "A Ruby app that makes your Jenkins CI automatically run tests on GitHub pull requests and updates their commit status."
 
   s.rubyforge_project = "jently"
 
