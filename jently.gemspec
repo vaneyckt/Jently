@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency 'json',              '~> 1.7.7'
   s.add_runtime_dependency 'octokit',           '~> 1.24.0'
   s.add_runtime_dependency 'daemons',           '~> 1.1.9'
 end
