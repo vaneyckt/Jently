@@ -18,6 +18,7 @@ module Core
 
         thr = Thread.new do
           Github.set_pull_request_status(pull_request_id, {:status => 'pending', :description => 'Started work on pull request.'})
+          Log.log("Triggering Jenkins build for #{pull_request_id}")
           job_id = Jenkins.start_job(pull_request_id)
           state  = Jenkins.wait_on_job(job_id)
           Github.set_pull_request_status(pull_request_id, state)
@@ -36,6 +37,7 @@ module Core
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
+    Log.log("The current open pull requests are #{open_pull_requests_ids.join(', ')}")
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
       if PullRequestsData.outdated_success_status?(pull_request)
