@@ -135,14 +135,14 @@ describe Github do
       end
 
       context 'when there are statuses for the current head commit' do
-        it 'returns a hash with status attribute set to the state of the first status' do
+        it 'returns a hash with status attribute set to the state of the last status' do
           status_1 = mock('CommitStatus', :state => 'amazing')
           status_2 = mock('CommitStatus', :state => 'terrible')
           octokit_client.stub(:statuses).and_return([status_1, status_2])
 
           result = Github.get_pull_request(pull_request_id)
 
-          result[:status].should eql status_1.state
+          result[:status].should eql status_2.state
         end
       end
 
@@ -412,14 +412,14 @@ describe Github do
       end
 
       context 'when there are statuses for the current head commit' do
-        it 'returns a hash with status attribute set to the state of the first status' do
+        it 'returns a hash with status attribute set to the state of the last status' do
           status_1 = mock('CommitStatus', :state => 'amazing')
           status_2 = mock('CommitStatus', :state => 'terrible')
           octokit_client.stub(:statuses).and_return([status_1, status_2])
 
           result = Github.get_pull_request(pull_request_id)
 
-          result[:status].should eql status_1.state
+          result[:status].should eql status_2.state
         end
       end
 
