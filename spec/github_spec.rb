@@ -135,9 +135,9 @@ describe Github do
       end
 
       context 'when there are statuses for the current head commit' do
-        it 'returns a hash with status attribute set to the state of the last status' do
-          status_1 = mock('CommitStatus', :state => 'amazing')
-          status_2 = mock('CommitStatus', :state => 'terrible')
+        it 'returns a hash with status attribute set to the state of the most recent status' do
+          status_1 = mock('CommitStatus', :state => 'amazing', :updated_at => '2013-10-02 03:11:57 UTC' )
+          status_2 = mock('CommitStatus', :state => 'terrible', :updated_at => '2013-10-02 03:11:58 UTC')
           octokit_client.stub(:statuses).and_return([status_1, status_2])
 
           result = Github.get_pull_request(pull_request_id)
@@ -412,9 +412,9 @@ describe Github do
       end
 
       context 'when there are statuses for the current head commit' do
-        it 'returns a hash with status attribute set to the state of the last status' do
-          status_1 = mock('CommitStatus', :state => 'amazing')
-          status_2 = mock('CommitStatus', :state => 'terrible')
+        it 'returns a hash with status attribute set to the state of the most recent status' do
+          status_1 = mock('CommitStatus', :state => 'amazing', :updated_at => '2013-10-02 03:11:57 UTC' )
+          status_2 = mock('CommitStatus', :state => 'terrible', :updated_at => '2013-10-02 03:11:58 UTC')
           octokit_client.stub(:statuses).and_return([status_1, status_2])
 
           result = Github.get_pull_request(pull_request_id)
