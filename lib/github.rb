@@ -32,9 +32,8 @@ module Github
 
       # Sort statuses elements in order of updated_at date, and pull out the
       # state fields.
-      status_states = status.sort_by {|s| status.updated_at }.map {|s| s.state }
-
-      data[:status] = status_states.first || 'undefined'
+      sorted_statuses = statuses.sort_by { |s| s.updated_at }.map { |s| s.state }
+      data[:status] = sorted_statuses.last || 'undefined'
 
       # Update base_sha separately. The pull_request call is
       # not guaranteed to return the last sha of the base branch.
