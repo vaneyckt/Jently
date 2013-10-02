@@ -30,7 +30,11 @@ module Github
       data[:head_branch] = pull_request.head.ref
       data[:head_sha]    = pull_request.head.sha
 
-      data[:status] = statuses.empty? ? 'undefined' : statuses.last.state
+      # Sort statuses elements in order of updated_at date, and pull out the
+      # state fields.
+      status_states = status.sort_by {|s| status.updated_at }.map {|s| s.state }
+
+      data[:status] = status_states.first || 'undefined'
 
       # Update base_sha separately. The pull_request call is
       # not guaranteed to return the last sha of the base branch.
