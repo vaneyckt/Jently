@@ -63,9 +63,11 @@ class JentlyOptions
   end
 end
 
-Signal.trap("TERM") do
-  Log.log("Received SIGTERM. Shutting down...")
-  exit
+%w(TERM INT).each do |signal|
+  Signal.trap(signal) do
+    Log.log("Received SIG#{signal}. Shutting down...")
+    exit
+  end
 end
 
 Jently = JentlyOptions.parse(ARGV)
