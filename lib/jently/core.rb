@@ -72,6 +72,10 @@ module Core
     end
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
-    test_pull_request(pull_request_id_to_test) if pull_request_id_to_test
+    if pull_request_id_to_test
+      test_pull_request(pull_request_id_to_test)
+    else
+      Log.log("There are no pull requests that require testing")
+    end
   end
 end
