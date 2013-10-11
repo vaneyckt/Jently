@@ -6,7 +6,9 @@ module Jenkins
     config = ConfigFile.read(Jently.config_filename)
     while true
       return if get_nb_of_idle_executors >= 1
-      sleep config[:jenkins_polling_interval_seconds]
+      interval = config[:jenkins_polling_interval_seconds]
+      Log.log("Not enough idle Jenkins executors. Sleeping for #{interval}.")
+      sleep interval
     end
   end
 
