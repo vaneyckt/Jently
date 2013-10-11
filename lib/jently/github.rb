@@ -60,7 +60,7 @@ module Github
       client = Github.new_client
       client.create_status(repository_id, head_sha, state[:status], opts)
 
-      Log.log("Setting build status for #{id} to #{status[:status]}", :level => :debug)
+      Log.log("Setting build status for #{id} to #{state[:status]}", :level => :debug)
       PullRequestsData.update_status(id, state[:status])
 
       if state[:status] == 'success' || state[:status] == 'failure'
