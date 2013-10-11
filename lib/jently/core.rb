@@ -18,7 +18,6 @@ module Core
             :status      => 'pending',
             :description => 'Started work on pull request.'
           }
-          Log.log("Setting build status for #{id} to #{attrs[:status]}", :level => :debug)
           Github.set_pull_request_status(id, attrs)
 
           Log.log("Triggering Jenkins build for #{id}")
@@ -67,7 +66,6 @@ module Core
           :status      => 'success',
           :description => "This has been rescheduled for testing as the '#{base_branch}' branch has been updated."
         }
-        Log.debug("Setting pull request status on #{id}")
         Github.set_pull_request_status(id, attrs)
       end
       PullRequestsData.update(pull_request)
