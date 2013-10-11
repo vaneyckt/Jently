@@ -25,7 +25,7 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
-      Log.log('Error when getting number of idle executors', e)
+      Log.log('Error when getting number of idle executors', e, :level => :error)
       sleep 5
       retry
     end
@@ -49,7 +49,7 @@ module Jenkins
       end
       job_id
     rescue => e
-      Log.log('Error when starting job', e)
+      Log.log('Error when starting job', e, :level => :error)
       sleep 5
       retry
     end
@@ -79,8 +79,8 @@ module Jenkins
           req.params[:random] = Time.now.to_i
         end
       rescue Faraday::Error::ParsingError => e
-        Log.log("There was a problem talking to Jenkins about the #{config[:jenkins_job_name]} job")
-        Log.log('You may not have set up a parameterised Jenkins build per the README.')
+        Log.log("There was a problem talking to Jenkins about the #{config[:jenkins_job_name]} job", :level => :error)
+        Log.log('You may not have set up a parameterised Jenkins build per the README.', :level => :error)
         raise e
       end
 
@@ -99,7 +99,7 @@ module Jenkins
       end
       state
     rescue => e
-      Log.log('Error when getting job state', e)
+      Log.log('Error when getting job state', e, :level => :error)
       sleep 5
       retry
     end
