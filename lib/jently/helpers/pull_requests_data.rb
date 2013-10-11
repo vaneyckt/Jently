@@ -89,6 +89,7 @@ module PullRequestsData
     to_test = data.values.select do |pr|
       pr[:is_test_required] && (whitelist_branches.empty? || whitelist_branches.include?(pr[:base_branch]))
     end
+
     to_test.empty? ? nil : to_test.max_by { |pull_request| pull_request[:priority] }[:id]
   end
 end
