@@ -74,7 +74,11 @@ module PullRequestsData
     was_updated = (is_new) ? false : (data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) ||
                                      (data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
 
-    is_test_required = is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated)
+    is_new ||
+    is_waiting_to_be_tested ||
+    has_inconsistent_status ||
+    has_invalid_status ||
+    (has_valid_status && was_updated)
   end
 
   def next
