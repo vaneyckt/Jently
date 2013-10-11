@@ -5,7 +5,7 @@ module Jenkins
   module_function
   def wait_for_idle_executor
     config = ConfigFile.read(Jently.config_filename)
-    while true
+    loop do
       return if idle_executors >= 1
       interval = config[:jenkins_polling_interval_seconds]
       Log.log("Not enough idle Jenkins executors. Sleeping for #{interval}.")
@@ -25,7 +25,7 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
-      Log.log('Error when getting nb of idle executors', e)
+      Log.log('Error when getting number of idle executors', e)
       sleep 5
       retry
     end
@@ -55,12 +55,14 @@ module Jenkins
     end
   end
 
-  def wait_on_job(job_id)
+  def wait_on_job(id)
     config = ConfigFile.read(Jently.config_filename)
-    while true
-      state = get_job_state(job_id)
+    loop do
+      state = get_job_state(id)
       return state if !state.nil?
-      sleep config[:jenkins_polling_interval_seconds]
+      interval = config[:jenkins_polling_interval_seconds]
+      Log.log("Waiting on Jenkins job #{id} for #{interval} seconds", :level => :debug)
+      sleep interval
     end
   end
 
