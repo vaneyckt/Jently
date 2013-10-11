@@ -4,10 +4,20 @@ require 'socket'
 
 module Log
   module_function
-  def log(message, exception=nil)
-    exception_output = " - #{exception} -\n#{exception.backtrace.join("\n")}" if exception
-    message += exception_output.to_s
-    method = exception ? :fatal : :info
+  def log(message, exception=nil, opts={})
+    if exception.is_a?(Hash)
+      opts      = exception
+      exception = nil
+    end
+
+    options = {
+      :level => exception ? :fatal : :info
+    }.merge(opts)
+
+    method = options[:level]
+    if exception
+      message << " :: #{exception} -\n#{exception.backtrace.join("\n")}".to_s
+    end
 
     logger.send(method, message)
   end
