@@ -63,6 +63,11 @@ class JentlyOptions
   end
 end
 
+Signal.trap("TERM") do
+  Log.log("Received SIGTERM. Shutting down...")
+  exit
+end
+
 Jently = JentlyOptions.parse(ARGV)
 
 loop do
