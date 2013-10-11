@@ -10,6 +10,8 @@ module Core
       pull_request = PullRequestsData.read[id]
       mergeable    = pull_request[:mergeable]
 
+      Log.log("Testing pull request #{id}", :level => :debug)
+
       if mergeable
         Jenkins.wait_for_idle_executor
 
@@ -22,6 +24,7 @@ module Core
 
           Log.log("Triggering Jenkins build for #{id}")
           job_id = Jenkins.start_job(id)
+          Log.log("Waiting for feedback on Jenkins job #{job_id} for pull request #{id}", :level => :debug)
           state  = Jenkins.wait_on_job(job_id)
           Github.set_pull_request_status(id, state)
         end
@@ -42,7 +45,7 @@ module Core
         Github.set_pull_request_status(id, attrs)
       end
     rescue => e
-      Log.log('Error when testing pull request', e)
+      Log.log('Error when testing pull request', e, :level => :error)
 
       attrs = {
         :status      => 'error',
