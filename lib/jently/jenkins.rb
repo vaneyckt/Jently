@@ -59,7 +59,7 @@ module Jenkins
     config = ConfigFile.read(Jently.config_filename)
     loop do
       state = get_job_state(id)
-      return state if !state.nil?
+      return state if state
       interval = config[:jenkins_polling_interval_seconds]
       Log.log("Waiting on Jenkins job #{id} for #{interval} seconds", :level => :debug)
       sleep interval
