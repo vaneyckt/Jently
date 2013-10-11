@@ -47,10 +47,10 @@ module PullRequestsData
     data   = read
     is_new = !data.has_key?(pull_request[:id])
 
-    has_outdated_success_status = !is_new &&
-                                  pull_request[:status] == 'success' &&
-                                  data[pull_request[:id]][:status] == 'success' &&
-                                  data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
+    !is_new &&
+    pull_request[:status] == 'success' &&
+    data[pull_request[:id]][:status] == 'success' &&
+    data[pull_request[:id]][:base_sha] != pull_request[:base_sha]
   end
 
   def get_new_priority(pull_request)
