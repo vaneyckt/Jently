@@ -1,4 +1,6 @@
 require 'logger'
+require 'time'
+require 'socket'
 
 module Log
   module_function
@@ -28,10 +30,11 @@ module Log
       @logger = Logger.new(STDOUT)
     end
 
-    @logger.formatter = proc do |severity, datetime, progname, msg|
-      header = "#{datetime} #{severity}:\n"
-      header << '=' * header.strip.size
-      header << "\n#{msg}\n"
+    @logger.formatter = proc do |sev, datetime, progname, msg|
+      hostname  = ::Socket.gethostname
+      timestamp = datetime.iso8601
+      severity  = sev.downcase
+      "#{timestamp} #{hostname}: #{severity}: #{msg}\n"
     end
   end
 end

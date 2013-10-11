@@ -34,7 +34,7 @@ describe Log do
         log_path.rewind
         results = log_path.read
 
-        results.should match /^#{message}\n\z/
+        results.should match /#{message}$/
       end
     end
   end
