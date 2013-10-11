@@ -77,7 +77,7 @@ module PullRequestsData
     is_test_required = is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated)
   end
 
-  def get_pull_request_id_to_test
+  def next
     data   = read
     config = ConfigFile.read(Jently.config_filename)
     whitelist_branches = config[:whitelist_branches]

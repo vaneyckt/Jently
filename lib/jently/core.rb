@@ -71,7 +71,7 @@ module Core
       PullRequestsData.update(pull_request)
     end
 
-    pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
+    pull_request_id_to_test = PullRequestsData.next
     if pull_request_id_to_test
       test_pull_request(pull_request_id_to_test)
     else
