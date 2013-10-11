@@ -1,7 +1,8 @@
 require 'octokit'
 
 module Github
-  def Github.get_open_pull_requests_ids
+  module_function
+  def get_open_pull_requests_ids
     begin
       client        = Github.new_client
       repository_id = Repository.get_id
@@ -15,7 +16,7 @@ module Github
     end
   end
 
-  def Github.get_pull_request(pull_request_id)
+  def get_pull_request(pull_request_id)
     begin
       client        = Github.new_client
       repository_id = Repository.get_id
@@ -47,7 +48,7 @@ module Github
     end
   end
 
-  def Github.set_pull_request_status(id, state)
+  def set_pull_request_status(id, state)
     begin
       repository_id = Repository.get_id
       head_sha      = PullRequestsData.read[id][:head_sha]
@@ -72,7 +73,7 @@ module Github
     end
   end
 
-  def Github.new_client
+  def new_client
     config = ConfigFile.read(Jently.config_filename)
     if config.has_key?(:github_api_endpoint)
       Octokit.configure do |c|
