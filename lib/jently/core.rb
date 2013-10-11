@@ -5,31 +5,51 @@ module Core
     ConfigFile.read(Jently.config_filename)
   end
 
-  def test_pull_request(pull_request_id)
+  def test_pull_request(id)
     begin
-      pull_request = PullRequestsData.read[pull_request_id]
+      pull_request = PullRequestsData.read[id]
+      mergeable    = pull_request[:mergeable]
 
-      if pull_request[:mergeable] == false
-        Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'})
-      end
-
-      if pull_request[:mergeable] == true
+      if mergeable
         Jenkins.wait_for_idle_executor
 
-        thr = Thread.new do
-          Github.set_pull_request_status(pull_request_id, {:status => 'pending', :description => 'Started work on pull request.'})
-          Log.log("Triggering Jenkins build for #{pull_request_id}")
-          job_id = Jenkins.start_job(pull_request_id)
+        thread = Thread.new do
+          attrs = {
+            :status      => 'pending',
+            :description => 'Started work on pull request.'
+          }
+          Log.log("Setting build status for #{id} to #{attrs[:status]}", :level => :debug)
+          Github.set_pull_request_status(id, attrs)
+
+          Log.log("Triggering Jenkins build for #{id}")
+          job_id = Jenkins.start_job(id)
           state  = Jenkins.wait_on_job(job_id)
-          Github.set_pull_request_status(pull_request_id, state)
+          Github.set_pull_request_status(id, state)
         end
 
-        timeout = thr.join(config[:jenkins_job_timeout_seconds]).nil?
-        Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'Job timed out.'}) if timeout
+        interval = config[:jenkins_job_timeout_seconds]
+        if thread.join(interval).nil?
+          attrs = {
+            :status      => 'error',
+            :description => 'Job timed out.'
+          }
+          Github.set_pull_request_status(id, attrs)
+        end
+      else
+        attrs = {
+          :status      => 'failure',
+          :description => 'Unmergeable pull request.'
+        }
+        Github.set_pull_request_status(id, attrs)
       end
     rescue => e
-      Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'})
       Log.log('Error when testing pull request', e)
+
+      attrs = {
+        :status      => 'error',
+        :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'
+      }
+      Github.set_pull_request_status(id, attrs)
     end
   end
 
@@ -37,16 +57,23 @@ module Core
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
-    Log.log("The current open pull requests are #{open_pull_requests_ids.join(', ')}")
+    Log.log("The current open pull requests are #{open_pull_requests_ids.sort.join(', ')}")
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
       if PullRequestsData.outdated_success_status?(pull_request)
-        Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been rescheduled for testing as the '#{pull_request[:base_branch]}' branch has been updated."})
+        id          = pull_request[:id]
+        base_branch = pull_request[:base_branch]
+        attrs = {
+          :status      => 'success',
+          :description => "This has been rescheduled for testing as the '#{base_branch}' branch has been updated."
+        }
+        Log.debug("Setting pull request status on #{id}")
+        Github.set_pull_request_status(id, attrs)
       end
       PullRequestsData.update(pull_request)
     end
 
     pull_request_id_to_test = PullRequestsData.get_pull_request_id_to_test
-    test_pull_request(pull_request_id_to_test) if !pull_request_id_to_test.nil?
+    test_pull_request(pull_request_id_to_test) if pull_request_id_to_test
   end
 end
