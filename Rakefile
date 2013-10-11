@@ -5,7 +5,7 @@ require 'colorize'
 RSpec::Core::RakeTask.new('spec')
 
 desc "build gem"
-task :build do
+task :build => [ :spec ] do
   build_output = `gem build jently.gemspec`
   puts build_output
 
