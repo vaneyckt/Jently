@@ -47,10 +47,10 @@ module Github
     end
   end
 
-  def Github.set_pull_request_status(pull_request_id, state)
+  def Github.set_pull_request_status(id, state)
     begin
       repository_id = Repository.get_id
-      head_sha      = PullRequestsData.read[pull_request_id][:head_sha]
+      head_sha      = PullRequestsData.read[id][:head_sha]
 
       opts               = {}
       opts[:target_url]  = state[:url] if !state[:url].nil?
@@ -59,10 +59,11 @@ module Github
       client = Github.new_client
       client.create_status(repository_id, head_sha, state[:status], opts)
 
-      PullRequestsData.update_status(pull_request_id, state[:status])
+      Log.log("Setting build status for #{id} to #{status[:status]}", :level => :debug)
+      PullRequestsData.update_status(id, state[:status])
 
       if state[:status] == 'success' || state[:status] == 'failure'
-        PullRequestsData.reset(pull_request_id)
+        PullRequestsData.reset(id)
       end
     rescue => e
       Log.log('Error when setting pull request status', e)
