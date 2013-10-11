@@ -40,9 +40,7 @@ module Log
       @logger = Logger.new(STDOUT)
     end
 
-    config = ConfigFile.read(Jently.config_filename)
-    @logger.level = Logger.const_get((config[:log_level] || 'info').upcase)
-
+    @logger.level = Jently.log_level
     @logger.formatter = proc do |sev, datetime, progname, msg|
       hostname  = ::Socket.gethostname
       timestamp = datetime.iso8601

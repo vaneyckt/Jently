@@ -27,6 +27,9 @@ class JentlyOptions
       opts.on('-d', '--data DIRECTORY', 'Directory for caching pull request data') do |dir|
         options.data_directory = Pathname.new(dir)
       end
+      opts.on('-l', '--log-level LEVEL', 'Logging level to use (debug, info, warn, error, fatal) ') do |level|
+        options.log_level = level
+      end
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
@@ -35,6 +38,7 @@ class JentlyOptions
 
     opts.parse!(args)
 
+    options.log_level       ||= 'info'
     options.config_filename ||= Pathname.new(Dir.pwd).join('config.yaml')
     options.data_directory  ||= Pathname.new(Dir.pwd).join('db')
     options.database_path   = options.data_directory.join('pull_requests.yaml')
@@ -47,6 +51,15 @@ class JentlyOptions
 
     if not options.data_directory.writable?
       puts "The specified data directory #{options.data_directory} is not writable."
+      puts "Exiting."
+      exit 2
+    end
+
+    valid_levels = %w(debug info warn error fatal)
+    if valid_levels.include?(options.log_level)
+      options.log_level = Logger.const_get(options.log_level.upcase)
+    else
+      puts "The specified log level #{options.log_level} was not one of #{valid_levels.join(', ')}."
       puts "Exiting."
       exit 2
     end
