@@ -80,8 +80,11 @@ module PullRequestsData
   def get_pull_request_id_to_test
     data   = read
     config = ConfigFile.read(Jently.config_filename)
+    whitelist_branches = config[:whitelist_branches]
 
-    pull_requests_that_require_testing = data.values.select { |pull_request| pull_request[:is_test_required] && (config[:whitelist_branches].empty? || config[:whitelist_branches].include?(pull_request[:base_branch])) }
-    pull_request_id_to_test            = (pull_requests_that_require_testing.empty?) ? nil : pull_requests_that_require_testing.max_by { |pull_request| pull_request[:priority] }[:id]
+    to_test = data.values.select do |pr|
+      pr[:is_test_required] && (whitelist_branches.empty? || whitelist_branches.include?(pr[:base_branch]))
+    end
+    to_test.empty? ? nil : to_test.max_by { |pull_request| pull_request[:priority] }[:id]
   end
 end
