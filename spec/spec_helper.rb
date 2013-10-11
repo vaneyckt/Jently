@@ -11,7 +11,7 @@ $: << lib
 
 require 'ostruct'
 require 'tempfile'
-Jently = OpenStruct.new(:log_path => Tempfile.new('rspec'))
+Jently = OpenStruct.new(:log_path => Tempfile.new('rspec'), :log_level => 0)
 
 require 'jently/core'
 require 'jently/github'
