@@ -1,7 +1,16 @@
+PATH
+  remote: .
+  specs:
+    jently (1.0.0)
+      daemons (~> 1.1.9)
+      json (~> 1.7.7)
+      octokit (~> 1.24.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.4)
+    colorize (0.5.8)
     crack (0.3.2)
     daemons (1.1.9)
     diff-lcs (1.2.4)
@@ -10,9 +19,8 @@ GEM
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
     hashie (2.0.5)
-    jently (2.1.0)
     json (1.7.7)
-    multi_json (1.7.3)
+    multi_json (1.7.7)
     multipart-post (1.2.0)
     netrc (0.7.7)
     octokit (1.24.0)
@@ -39,12 +47,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  daemons
-  faraday
-  faraday_middleware
-  jently
+  colorize
+  jently!
   json
-  octokit
   rake
   rspec
   webmock

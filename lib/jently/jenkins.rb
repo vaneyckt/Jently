@@ -2,17 +2,20 @@ require 'faraday'
 require 'faraday_middleware'
 
 module Jenkins
-  def Jenkins.wait_for_idle_executor
-    config = ConfigFile.read
-    while true
-      return if get_nb_of_idle_executors >= 1
-      sleep config[:jenkins_polling_interval_seconds]
+  module_function
+  def wait_for_idle_executor
+    config = ConfigFile.read(Jently.config_filename)
+    loop do
+      return if idle_executors >= 1
+      interval = config[:jenkins_polling_interval_seconds]
+      Log.log("Not enough idle Jenkins executors. Sleeping for #{interval}.")
+      sleep interval
     end
   end
 
-  def Jenkins.get_nb_of_idle_executors
+  def idle_executors
     begin
-      config     = ConfigFile.read
+      config     = ConfigFile.read(Jently.config_filename)
       connection = Jenkins.new_connection("#{config[:jenkins_url]}/api/json", config, :use_json => true)
 
       response = connection.get do |req|
@@ -22,19 +25,19 @@ module Jenkins
       end
       response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
-      Logger.log('Error when getting nb of idle executors', e)
+      Log.log('Error when getting number of idle executors', e, :level => :error)
       sleep 5
       retry
     end
   end
 
-  def Jenkins.new_job_id(pull_request_id)
+  def new_job_id(pull_request_id)
     "#{pull_request_id}-#{(Time.now.to_f * 1000000).to_i}"
   end
 
-  def Jenkins.start_job(pull_request_id)
+  def start_job(pull_request_id)
     begin
-      config     = ConfigFile.read
+      config     = ConfigFile.read(Jently.config_filename)
       connection = Jenkins.new_connection("#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/buildWithParameters", config)
 
       job_id = new_job_id(pull_request_id)
@@ -46,24 +49,26 @@ module Jenkins
       end
       job_id
     rescue => e
-      Logger.log('Error when starting job', e)
+      Log.log('Error when starting job', e, :level => :error)
       sleep 5
       retry
     end
   end
 
-  def Jenkins.wait_on_job(job_id)
-    config = ConfigFile.read
-    while true
-      state = get_job_state(job_id)
-      return state if !state.nil?
-      sleep config[:jenkins_polling_interval_seconds]
+  def wait_on_job(id)
+    config = ConfigFile.read(Jently.config_filename)
+    loop do
+      state = get_job_state(id)
+      return state if state
+      interval = config[:jenkins_polling_interval_seconds]
+      Log.log("Waiting on Jenkins job #{id} for #{interval} seconds", :level => :debug)
+      sleep interval
     end
   end
 
-  def Jenkins.get_job_state(job_id)
+  def get_job_state(job_id)
     begin
-      config     = ConfigFile.read
+      config     = ConfigFile.read(Jently.config_filename)
       url        = "#{config[:jenkins_url]}/job/#{config[:jenkins_job_name]}/api/json"
       connection = Jenkins.new_connection(url, config, :use_json => true)
 
@@ -74,8 +79,8 @@ module Jenkins
           req.params[:random] = Time.now.to_i
         end
       rescue Faraday::Error::ParsingError => e
-        Logger.log("There was a problem talking to Jenkins about the #{config[:jenkins_job_name]} job")
-        Logger.log('You may not have set up a parameterised Jenkins build per the README.')
+        Log.log("There was a problem talking to Jenkins about the #{config[:jenkins_job_name]} job", :level => :error)
+        Log.log('You may not have set up a parameterised Jenkins build per the README.', :level => :error)
         raise e
       end
 
@@ -94,13 +99,13 @@ module Jenkins
       end
       state
     rescue => e
-      Logger.log('Error when getting job state', e)
+      Log.log('Error when getting job state', e, :level => :error)
       sleep 5
       retry
     end
   end
 
-  def Jenkins.new_connection(url, config, opts = {})
+  def new_connection(url, config, opts = {})
     connection = Faraday.new(:url => url) do |c|
       c.use Faraday::Request::UrlEncoded
       c.use FaradayMiddleware::FollowRedirects

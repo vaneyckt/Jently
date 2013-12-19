@@ -5,13 +5,21 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require './lib/core.rb'
-require './lib/github.rb'
-require './lib/jenkins.rb'
-require './lib/helpers/logger.rb'
-require './lib/helpers/repository.rb'
-require './lib/helpers/config_file.rb'
-require './lib/helpers/pull_requests_data.rb'
+require 'pathname'
+lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
+$: << lib
+
+require 'ostruct'
+require 'tempfile'
+Jently = OpenStruct.new(:log_path => Tempfile.new('rspec'), :log_level => 0)
+
+require 'jently/core'
+require 'jently/github'
+require 'jently/jenkins'
+require 'jently/helpers/logger'
+require 'jently/helpers/repository'
+require 'jently/helpers/config_file'
+require 'jently/helpers/pull_requests_data'
 
 require 'webmock/rspec'
 require 'json/add/core'
@@ -27,3 +35,4 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = 'random'
 end
+

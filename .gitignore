@@ -1,7 +1,9 @@
 log
-jently.pid
+jentlyd.pid
+jentlyd.output
 .ruby-version
 .ruby-gemset
 db/*
 config/*
 repositories/*
+pkg/

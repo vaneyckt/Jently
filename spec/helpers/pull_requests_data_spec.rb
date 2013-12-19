@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe PullRequestsData do
-  let(:datafile_path) { "#{Dir.pwd}/db/rspec_pull_requests.yaml" }
+  let(:datafile_path) { Pathname.new(Dir.mktmpdir).join('rspec_pull_requests.yaml') }
 
   before do
-    PullRequestsData.stub(:get_path).and_return(datafile_path)
+    PullRequestsData.stub(:path).and_return(datafile_path)
     File.delete(datafile_path) if File.exists?(datafile_path)
   end
 
@@ -300,7 +300,7 @@ describe PullRequestsData do
     end
   end
 
-  describe '.get_pull_request_id_to_test' do
+  describe '.next' do
     let(:not_required_id) { 123 }
     let(:not_required_pr) { { :id => not_required_id, :is_test_required => false } }
 
@@ -309,13 +309,13 @@ describe PullRequestsData do
     end
 
     it 'returns nil when there are no stored prs' do
-      PullRequestsData.get_pull_request_id_to_test.should be_nil
+      PullRequestsData.next.should be_nil
     end
 
     it 'returns nil when there are no stored prs with is_test_required set to true' do
       PullRequestsData.write( not_required_id => not_required_pr )
 
-      PullRequestsData.get_pull_request_id_to_test.should be_nil
+      PullRequestsData.next.should be_nil
     end
 
     let(:required_pr_1_id) { 456 }
@@ -325,7 +325,7 @@ describe PullRequestsData do
       it 'returns the only prs with is_test_required set to true' do
         PullRequestsData.write( not_required_id => not_required_pr, required_pr_1_id => required_pr_1 )
 
-        PullRequestsData.get_pull_request_id_to_test.should eql required_pr_1_id
+        PullRequestsData.next.should eql required_pr_1_id
       end
     end
 
@@ -336,11 +336,11 @@ describe PullRequestsData do
 
         PullRequestsData.write( required_pr_1_id => required_pr_1, required_pr_2_id => required_pr_2 )
 
-        PullRequestsData.get_pull_request_id_to_test.should eql required_pr_2_id
+        PullRequestsData.next.should eql required_pr_2_id
 
         PullRequestsData.write( required_pr_1_id => required_pr_1.merge(:priority => 7), required_pr_2_id => required_pr_2 )
 
-        PullRequestsData.get_pull_request_id_to_test.should eql required_pr_1_id
+        PullRequestsData.next.should eql required_pr_1_id
       end
     end
 
@@ -363,7 +363,7 @@ describe PullRequestsData do
 
           PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr, non_whitelist_pr_id => non_whitelist_pr )
 
-          PullRequestsData.get_pull_request_id_to_test.should eql non_whitelist_pr_id
+          PullRequestsData.next.should eql non_whitelist_pr_id
         end
       end
 
@@ -375,7 +375,7 @@ describe PullRequestsData do
                                   whitelist_2_pr_id => whitelist_2_pr,
                                   non_whitelist_pr_id => non_whitelist_pr )
 
-          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_1_pr_id
+          PullRequestsData.next.should eql whitelist_1_pr_id
         end
       end
 
@@ -387,13 +387,13 @@ describe PullRequestsData do
                                   whitelist_2_pr_id => whitelist_2_pr,
                                   non_whitelist_pr_id => non_whitelist_pr )
 
-          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_2_pr_id
+          PullRequestsData.next.should eql whitelist_2_pr_id
 
           PullRequestsData.write( whitelist_1_pr_id => whitelist_1_pr.merge(:priority => 7),
                                   whitelist_2_pr_id => whitelist_2_pr,
                                   non_whitelist_pr_id => non_whitelist_pr )
 
-          PullRequestsData.get_pull_request_id_to_test.should eql whitelist_1_pr_id
+          PullRequestsData.next.should eql whitelist_1_pr_id
         end
       end
     end

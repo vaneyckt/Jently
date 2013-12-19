@@ -1,7 +1,8 @@
 require 'octokit'
 
 module Github
-  def Github.get_open_pull_requests_ids
+  module_function
+  def get_open_pull_requests_ids
     begin
       client        = Github.new_client
       repository_id = Repository.get_id
@@ -9,13 +10,13 @@ module Github
       open_pull_requests     = client.pull_requests(repository_id, 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
     rescue => e
-      Logger.log('Error when getting open pull requests ids', e)
+      Log.log('Error when getting open pull requests ids', e)
       sleep 5
       retry
     end
   end
 
-  def Github.get_pull_request(pull_request_id)
+  def get_pull_request(pull_request_id)
     begin
       client        = Github.new_client
       repository_id = Repository.get_id
@@ -41,16 +42,16 @@ module Github
       data[:base_sha]    = client.commits(repository_id, data[:base_branch]).first.sha
       data
     rescue => e
-      Logger.log('Error when getting pull request', e)
+      Log.log('Error when getting pull request', e)
       sleep 5
       retry
     end
   end
 
-  def Github.set_pull_request_status(pull_request_id, state)
+  def set_pull_request_status(id, state)
     begin
       repository_id = Repository.get_id
-      head_sha      = PullRequestsData.read[pull_request_id][:head_sha]
+      head_sha      = PullRequestsData.read[id][:head_sha]
 
       opts               = {}
       opts[:target_url]  = state[:url] if !state[:url].nil?
@@ -59,20 +60,21 @@ module Github
       client = Github.new_client
       client.create_status(repository_id, head_sha, state[:status], opts)
 
-      PullRequestsData.update_status(pull_request_id, state[:status])
+      Log.log("Setting build status for #{id} to #{state[:status]}", :level => :debug)
+      PullRequestsData.update_status(id, state[:status])
 
       if state[:status] == 'success' || state[:status] == 'failure'
-        PullRequestsData.reset(pull_request_id)
+        PullRequestsData.reset(id)
       end
     rescue => e
-      Logger.log('Error when setting pull request status', e)
+      Log.log('Error when setting pull request status', e)
       sleep 5
       retry
     end
   end
 
-  def Github.new_client
-    config = ConfigFile.read
+  def new_client
+    config = ConfigFile.read(Jently.config_filename)
     if config.has_key?(:github_api_endpoint)
       Octokit.configure do |c|
         c.api_endpoint = config[:github_api_endpoint]

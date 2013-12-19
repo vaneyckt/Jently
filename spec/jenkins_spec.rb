@@ -6,10 +6,10 @@ describe Jenkins do
 
   before do
     Jenkins.stub(:sleep) # don't actually want to sleep during our test runs
-    Logger.stub(:log)
+    Log.stub(:log)
   end
 
-  describe '.get_nb_of_idle_executors' do
+  describe '.idle_executors' do
     let(:api_url)        { "#{jenkins_url}/api/json" }
     let(:config_data)    { { :jenkins_url => jenkins_url } }
     let(:idle_executors) { 5 }
@@ -22,7 +22,7 @@ describe Jenkins do
 
     it 'sends a GET request to the Jenkins api' do
       thr = Thread.new do
-        Jenkins.get_nb_of_idle_executors
+        Jenkins.idle_executors
         WebMock.should have_requested(:get, /#{api_url}.*/)
       end
 
@@ -37,7 +37,7 @@ describe Jenkins do
       it 'sends a request with basic auth credentials' do
         thr = Thread.new do
           config_data.merge!(:jenkins_login => jenkins_login, :jenkins_password => jenkins_password)
-          Jenkins.get_nb_of_idle_executors
+          Jenkins.idle_executors
           WebMock.should have_requested(:get, /#{api_url}.*/)
         end
 
@@ -47,7 +47,7 @@ describe Jenkins do
 
     it 'returns the number of executors parsed from the JSON response' do
       thr = Thread.new do
-        Jenkins.get_nb_of_idle_executors.should eql idle_executors
+        Jenkins.idle_executors.should eql idle_executors
       end
 
       thr.join(5).should_not be_nil
@@ -63,8 +63,8 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*idle executors.*/, request_error)
-          Jenkins.get_nb_of_idle_executors
+          Log.should_receive(:log).with(/Error.*idle executors.*/, request_error, {:level => :error})
+          Jenkins.idle_executors
         end
 
         thr.join(5).should_not be_nil
@@ -73,7 +73,7 @@ describe Jenkins do
       it 'retries the request after a 5 second delay' do
         thr = Thread.new do
           Jenkins.should_receive(:sleep).with(5)
-          Jenkins.get_nb_of_idle_executors
+          Jenkins.idle_executors
           WebMock.should have_requested(:get, /#{api_url}.*/).twice
         end
 
@@ -146,7 +146,7 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*starting job.*/, request_error)
+          Log.should_receive(:log).with(/Error.*starting job.*/, request_error, {:level => :error})
           Jenkins.start_job(pull_request_id)
         end
 
@@ -278,7 +278,7 @@ describe Jenkins do
 
       it 'logs the failure' do
         thr = Thread.new do
-          Logger.should_receive(:log).with(/Error.*job state/, request_error)
+          Log.should_receive(:log).with(/Error.*job state/, request_error, {:level => :error})
           Jenkins.get_job_state(successful_job_id)
         end
 

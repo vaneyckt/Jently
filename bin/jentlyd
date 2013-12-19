@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'ostruct'
+require 'optparse'
+require 'daemons'
+require 'pathname'
+
+class JentlydOptions
+  def self.parse(args)
+    options = OpenStruct.new({:directory => Dir.pwd})
+    daemon_args = []
+    opts = OptionParser.new do |opts|
+      opts.on('-d', '--directory DIR', 'Write logs and state to this directory') do |d|
+        options.directory = Pathname.new(d)
+      end
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+    end
+
+    reserved_args = %w(-t --ontop -f --force -n --no_wait --version)
+
+    begin
+      opts.parse!(args - reserved_args)
+    rescue OptionParser::InvalidOption => e
+      puts "Error when parsing arguments. Exiting!"
+      exit 1
+    end
+
+    root   = Pathname.new(__FILE__).parent.expand_path
+    script = root.join('jently').to_s
+
+    # Nuke our own arguments before passing to Daemons.run
+    if index = args.index('--directory') || args.index('-d')
+      2.times { args.delete_at(index) }
+    end
+
+    daemon_options = {
+      :app_name => 'jentlyd',
+      :ARGV     => args,
+      :dir_mode => :normal,
+      :dir      => options.directory,
+      :log_output => true,
+    }
+
+    return script, daemon_options
+  end
+end
+
+script, options = JentlydOptions.parse(ARGV.dup)
+Daemons.run(script, options)

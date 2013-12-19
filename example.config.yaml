@@ -1,0 +1,55 @@
+---
+# The account that Jently will use for communicating with GitHub.
+# You can either use standard login credentials, or you can
+# specify a GitHub oauth token. If you choose to use an oauth token,
+# make sure to comment out or delete the github_password from this file.
+# Note that this config file supports ERB. This allows you to store
+# sensitive information as shell environment variables which can then
+# be referred to in this file.
+# For example, if you were to store your GitHub login as the GITHUB_LOGIN
+# environment variable, then you could specify your GitHub login like this:
+# :github_login: <%= ENV['GITHUB_LOGIN'] %>
+:github_login: github_login
+:github_password: github_password
+#:github_oauth_token: github_oauth_token
+
+# To use Jently with GitHub Enterprise, you'll need to set the GitHub
+# API and web endpoints. Otherwise, leave these lines commented out.
+#:github_api_endpoint: github_api_endpoint
+#:github_web_endpoint: github_web_endpoint
+
+# The repository that contains the pull requests you want to run tests on.
+# For example, if you wanted to test the pull requests of the Jently repository,
+# you would put git@github.com:vaneyckt/Jently.git here.
+:github_ssh_repository: git@github.com:vaneyckt/Jently.git
+
+# The interval between successive communications with GitHub.
+# This makes sure we don't end up spamming GitHub's servers.
+:github_polling_interval_seconds: 60
+
+# If access to your Jenkins CI is restricted with a login and password,
+# you can enther these here. Otherwise you should comment out or delete these lines.
+:jenkins_login: jenkins_login
+:jenkins_password: jenkins_password
+
+# The url that your Jenkins CI can be found at.
+:jenkins_url: jenkins_url
+
+# The Jenkins build job for testing that you set up in step 1 of the installation
+# guide at https://github.com/vaneyckt/Jently/blob/master/README.rdoc.
+:jenkins_job_name: test_job
+
+# The amount of time Jently will wait for a test job to complete before marking it
+# as timed out. A good number for this is twice the amount of time that the test job
+# should take on average.
+:jenkins_job_timeout_seconds: 1800
+
+# The interval between successive polling requests that Jently makes to Jenkins in
+# order to query the state of the test job.
+:jenkins_polling_interval_seconds: 60
+
+# By default, Jently tests all pull requests.  If you only want Jently to test pull requests that
+# are to be merged into specific branches, uncomment the following, and specify these branches, one per line.
+#:whitelist_branches:
+#  - master
+#  - release

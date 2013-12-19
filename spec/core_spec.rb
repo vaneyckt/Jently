@@ -13,7 +13,7 @@ describe Core do
       PullRequestsData.stub(:outdated_success_status?).and_return(false)
       Github.stub(:set_pull_request_status)
       PullRequestsData.stub(:update)
-      PullRequestsData.stub(:get_pull_request_id_to_test).and_return(nil)
+      PullRequestsData.stub(:next).and_return(nil)
       Core.stub(:test_pull_request)
     end
 
@@ -54,7 +54,7 @@ describe Core do
 
     context 'when there is a pull request that needs testing' do
       it 'triggers a new test for that pull request' do
-        PullRequestsData.stub(:get_pull_request_id_to_test).and_return(pull_request_id)
+        PullRequestsData.stub(:next).and_return(pull_request_id)
         Core.should_receive(:test_pull_request).with(pull_request_id)
 
         Core.poll_pull_requests_and_queue_next_job
@@ -63,7 +63,7 @@ describe Core do
 
     context 'when there is no pull request that needs testing' do
       it 'does not trigger any new pull request tests' do
-        PullRequestsData.stub(:get_pull_request_id_to_test).and_return(nil)
+        PullRequestsData.stub(:next).and_return(nil)
         Core.should_not_receive(:test_pull_request)
 
         Core.poll_pull_requests_and_queue_next_job
@@ -85,7 +85,7 @@ describe Core do
       Jenkins.stub(:wait_for_idle_executor)
       Jenkins.stub(:start_job).and_return(job_id)
       Jenkins.stub(:wait_on_job).and_return(job_state)
-      Logger.stub(:log)
+      Log.stub(:log)
     end
 
     it 'retrieves the stored pull request for the specified pull request id' do
@@ -169,7 +169,7 @@ describe Core do
         end
 
         it 'logs the error' do
-          Logger.should_receive(:log).with(anything(), exception)
+          Log.should_receive(:log).with(anything(), exception)
 
           Core.test_pull_request(pull_request_id)
         end

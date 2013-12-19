@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+
+# add lib directory to LOAD_PATH
+require 'pathname'
+lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
+$: << lib
+
+require 'optparse'
+require 'ostruct'
+require 'jently/core'
+require 'jently/github'
+require 'jently/jenkins'
+require 'jently/helpers/logger'
+require 'jently/helpers/repository'
+require 'jently/helpers/config_file'
+require 'jently/helpers/pull_requests_data'
+
+$stdout.sync = true
+
+class JentlyOptions
+  def self.parse(args)
+    options = OpenStruct.new
+    opts = OptionParser.new do |opts|
+      opts.on('-c', '--config FILE', 'Location of config file') do |file|
+        options.config_filename = Pathname.new(file)
+      end
+      opts.on('-d', '--data DIRECTORY', 'Directory for caching pull request data') do |dir|
+        options.data_directory = Pathname.new(dir)
+      end
+      opts.on('-l', '--log-level LEVEL', 'Logging level to use (debug, info, warn, error, fatal) ') do |level|
+        options.log_level = level
+      end
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+    end
+
+    opts.parse!(args)
+
+    options.log_level       ||= 'info'
+    options.config_filename ||= Pathname.new(Dir.pwd).join('config.yaml')
+    options.data_directory  ||= Pathname.new(Dir.pwd).join('db')
+    options.database_path   = options.data_directory.join('pull_requests.yaml')
+
+    if not options.config_filename.exist?
+      puts "The config file #{options.config_filename} doesn't exist."
+      puts "Exiting."
+      exit 2
+    end
+
+    if not options.data_directory.writable?
+      puts "The specified data directory #{options.data_directory} is not writable."
+      puts "Exiting."
+      exit 2
+    end
+
+    valid_levels = %w(debug info warn error fatal)
+    if valid_levels.include?(options.log_level)
+      options.log_level = Logger.const_get(options.log_level.upcase)
+    else
+      puts "The specified log level #{options.log_level} was not one of #{valid_levels.join(', ')}."
+      puts "Exiting."
+      exit 2
+    end
+
+    begin
+      ConfigFile.read(options.config_filename)
+    rescue NameError => e
+      puts e.message
+      puts "Exiting."
+      exit 2
+    end
+
+    options
+  end
+end
+
+%w(TERM INT).each do |signal|
+  Signal.trap(signal) do
+    Log.log("Received SIG#{signal}. Shutting down...")
+    exit
+  end
+end
+
+Jently = JentlyOptions.parse(ARGV)
+
+loop do
+  begin
+    Log.log("Reading config from #{Jently.config_filename}")
+    config = ConfigFile.read(Jently.config_filename)
+
+    Core.poll_pull_requests_and_queue_next_job
+
+    interval = config[:github_polling_interval_seconds]
+    Log.log("Sleeping for #{interval}")
+    sleep interval
+  rescue => e
+    Log.log('Error in main loop', e)
+  end
+end
