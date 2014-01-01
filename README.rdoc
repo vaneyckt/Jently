@@ -43,6 +43,8 @@ A configuration file can be found in the /config directory. There are a few conf
 
 === Installing the software
 
+===== Manual installation
+
 Jently uses bundler to install the Ruby gems it requires. You can install bundler by running:
 
     gem install bundler
@@ -50,6 +52,12 @@ Jently uses bundler to install the Ruby gems it requires. You can install bundle
 You can now use bundler to install the required gems by navigating into the Jently folder and running:
 
     bundle install
+
+===== Chef
+
+A cookbook exists for automating the installation and configuration of Jently via Chef.
+
+https://github.com/paydici/jently-cookbook
 
 === Running Jently
 
