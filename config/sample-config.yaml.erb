@@ -15,8 +15,8 @@
 # For example, if you were to store your GitHub login as the GITHUB_LOGIN
 # environment variable, then you could specify your GitHub login like this:
 # :github_login: <%= ENV['GITHUB_LOGIN'] %>
-:github_login: github_login
-:github_password: github_password
+:github_login: vood
+:github_password: v99d999
 #:github_oauth_token: github_oauth_token
 
 # To use Jently with GitHub Enterprise, you'll need to set the GitHub
@@ -27,23 +27,23 @@
 # The repository that contains the pull requests you want to run tests on.
 # For example, if you wanted to test the pull requests of the Jently repository,
 # you would put git@github.com:vaneyckt/Jently.git here.
-:github_ssh_repository: git@github.com:vaneyckt/Jently.git
+:github_ssh_repository: git@github.com:sugareps/Mango.git
 
 # The interval between successive communications with GitHub.
 # This makes sure we don't end up spamming GitHub's servers.
-:github_polling_interval_seconds: 60
+:github_polling_interval_seconds: 10
 
 # If access to your Jenkins CI is restricted with a login and password,
 # you can enther these here. Otherwise you should comment out or delete these lines.
-:jenkins_login: jenkins_login
-:jenkins_password: jenkins_password
+:jenkins_login: avysotsky 
+:jenkins_password: changeme
 
 # The url that your Jenkins CI can be found at.
-:jenkins_url: jenkins_url
+:jenkins_url: http://10.8.7.59:8080
 
 # The Jenkins build job for testing that you set up in step 1 of the installation
 # guide at https://github.com/vaneyckt/Jently/blob/master/README.rdoc.
-:jenkins_job_name: test_job
+:jenkins_job_name: Jently
 
 # The amount of time Jently will wait for a test job to complete before marking it
 # as timed out. A good number for this is twice the amount of time that the test job
@@ -52,10 +52,11 @@
 
 # The interval between successive polling requests that Jently makes to Jenkins in
 # order to query the state of the test job.
-:jenkins_polling_interval_seconds: 60
+:jenkins_polling_interval_seconds: 10
 
 # By default, Jently tests all pull requests.  If you only want Jently to test pull requests that
 # are to be merged into specific branches, uncomment the following, and specify these branches, one per line.
-#:whitelist_branches:
-#  - master
-#  - release
+:whitelist_branches:
+  - ibm_r12_hotfix2
+  - ibm_r13
+  - ibm_sugar7_migration

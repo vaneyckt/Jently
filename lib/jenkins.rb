@@ -20,7 +20,7 @@ module Jenkins
         req.params[:tree]   = 'assignedLabels[idleExecutors]'
         req.params[:random] = Time.now.to_i
       end
-      response.body[:assignedLabels][0][:idleExecutors]
+      return 1 #response.body[:assignedLabels][0][:idleExecutors]
     rescue => e
       Logger.log('Error when getting nb of idle executors', e)
       sleep 5
