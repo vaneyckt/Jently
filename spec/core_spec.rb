@@ -15,6 +15,7 @@ describe Core do
       PullRequestsData.stub(:update)
       PullRequestsData.stub(:get_pull_request_id_to_test).and_return(nil)
       Core.stub(:test_pull_request)
+      ConfigFile.stub(:read).and_return({})
     end
 
     it 'retrieves a list of open pull request ids from Github' do
@@ -69,6 +70,29 @@ describe Core do
         Core.poll_pull_requests_and_queue_next_job
       end
     end
+
+    context 'when base branch has been updated and github_watch_base_branch_update is false' do
+      it 'does not trigger any new pull request tests' do
+        PullRequestsData.stub(:outdated_success_status?).and_return(true)
+        ConfigFile.stub(:read).and_return(:github_watch_base_branch_update => false)
+        Github.should_not_receive(:set_pull_request_status)
+
+        Core.poll_pull_requests_and_queue_next_job
+      end
+    end
+
+    context 'when base branch has been updated and github_watch_base_branch_update is true' do
+      it 'triggers any new pull request tests' do
+        PullRequestsData.stub(:outdated_success_status?).and_return(true)
+        ConfigFile.stub(:read).and_return(:github_watch_base_branch_update => true)
+        Github.should_receive(:set_pull_request_status)
+
+        Core.poll_pull_requests_and_queue_next_job
+      end
+    end
+
+
+    context
   end
 
   describe '.test_pull_request' do
@@ -122,6 +146,20 @@ describe Core do
 
       it 'tells Github to mark the pull request status as the state returned by Jenkins' do
         Github.should_receive(:set_pull_request_status).with( pull_request_id, hash_including(job_state) )
+
+        Core.test_pull_request(pull_request_id)
+      end
+
+      it 'should not wait for an idle executor if jenkins_wait_for_idle_executor is false' do
+        Jenkins.should_not_receive(:wait_for_idle_executor)
+        ConfigFile.stub(:read).and_return(:jenkins_wait_for_idle_executor => false)
+
+        Core.test_pull_request(pull_request_id)
+      end
+
+      it 'should wait for an idle executor if jenkins_wait_for_idle_executor is false' do
+        Jenkins.should_not_receive(:wait_for_idle_executor)
+        ConfigFile.stub(:read).and_return(:jenkins_wait_for_idle_executor => false)
 
         Core.test_pull_request(pull_request_id)
       end

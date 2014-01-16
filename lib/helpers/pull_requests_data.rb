@@ -64,6 +64,7 @@ module PullRequestsData
   def PullRequestsData.test_required?(pull_request)
     return false if pull_request[:merged]
 
+    config = ConfigFile.read
     data   = read
     is_new = !data.has_key?(pull_request[:id])
 
@@ -74,7 +75,7 @@ module PullRequestsData
     has_valid_status   = ['success', 'failure'].include?(pull_request[:status])
 
     was_updated = (is_new) ? false : (data[pull_request[:id]][:head_sha] != pull_request[:head_sha]) ||
-                                     (data[pull_request[:id]][:base_sha] != pull_request[:base_sha])
+                                     (data[pull_request[:id]][:base_sha] != pull_request[:base_sha] && config.fetch(:github_watch_base_branch_update, true))
 
     is_test_required = is_new || is_waiting_to_be_tested || has_inconsistent_status || has_invalid_status || (has_valid_status && was_updated)
   end
