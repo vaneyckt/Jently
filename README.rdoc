@@ -35,7 +35,7 @@ http://imgur.com/LbdKFTY.png
 
 You'll need to clone the Jently repository to your hard drive in order to get started. You can do this by running:
 
-    git clone git@github.com:vaneyckt/Jently.git
+    git clone https://github.com/vaneyckt/Jently.git
 
 === Modifying the configuration file
 
