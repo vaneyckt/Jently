@@ -7,7 +7,7 @@
 
 # The account that Jently will use for communicating with GitHub.
 # You can either use standard login credentials, or you can
-# specify a GitHub oauth token. If you choose to use an oauth token,
+# specify a GitHub access token. If you choose to use an access token,
 # make sure to comment out or delete the github_password from this file.
 # Note that this config file supports ERB. This allows you to store
 # sensitive information as shell environment variables which can then
@@ -17,7 +17,7 @@
 # :github_login: <%= ENV['GITHUB_LOGIN'] %>
 :github_login: github_login
 :github_password: github_password
-#:github_oauth_token: github_oauth_token
+#:github_access_token: github_access_token
 
 # To use Jently with GitHub Enterprise, you'll need to set the GitHub
 # API and web endpoints. Otherwise, leave these lines commented out.

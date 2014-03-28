@@ -6,7 +6,7 @@ module Github
       client        = Github.new_client
       repository_id = Repository.get_id
 
-      open_pull_requests     = client.pull_requests(repository_id, 'open')
+      open_pull_requests     = client.pull_requests(repository_id, :state => 'open')
       open_pull_requests_ids = open_pull_requests.collect { |pull_request| pull_request.number }
     rescue => e
       Logger.log('Error when getting open pull requests ids', e)
@@ -80,8 +80,8 @@ module Github
       end
     end
 
-    if config.has_key?(:github_oauth_token)
-      client = Octokit::Client.new(:login => config[:github_login], :oauth_token => config[:github_oauth_token])
+    if config.has_key?(:github_access_token)
+      client = Octokit::Client.new(:access_token => config[:github_access_token])
     else
       client = Octokit::Client.new(:login => config[:github_login], :password => config[:github_password])
     end
