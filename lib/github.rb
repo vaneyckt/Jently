@@ -55,6 +55,7 @@ module Github
       opts               = {}
       opts[:target_url]  = state[:url] if !state[:url].nil?
       opts[:description] = state[:description] if !state[:description].nil?
+      opts[:context]     = state[:context] || 'ci'
 
       client = Github.new_client
       client.create_status(repository_id, head_sha, state[:status], opts)

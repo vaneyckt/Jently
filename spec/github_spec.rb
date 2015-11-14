@@ -226,7 +226,7 @@ describe Github do
 
       context 'when the specified state has a nil jenkins url or descritpion' do
         it 'does not include a url or description keys in the options passed to client create_status' do
-          octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), {} )
+          octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), {:context => 'ci'} )
 
           Github.set_pull_request_status(pull_request_id, undefined_state)
         end
@@ -503,7 +503,7 @@ describe Github do
 
       context 'when the specified state has a nil jenkins url or descritpion' do
         it 'does not include a url or description keys in the options passed to client create_status' do
-          octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), {} )
+          octokit_client.should_receive(:create_status).with( anything(), anything(), anything(), {:context => 'ci'} )
 
           Github.set_pull_request_status(pull_request_id, undefined_state)
         end
