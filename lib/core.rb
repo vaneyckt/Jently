@@ -5,24 +5,24 @@ module Core
       pull_request = PullRequestsData.read[pull_request_id]
 
       if pull_request[:mergeable] == false
-        Github.set_pull_request_status(pull_request_id, {:status => 'failure', :description => 'Unmergeable pull request.'})
+        Github.set_pull_request_status(pull_request_id, {:status => 'failure', :context => 'ci', :description => 'Unmergeable pull request.'})
       end
 
       if pull_request[:mergeable] == true
         Jenkins.wait_for_idle_executor
 
         thr = Thread.new do
-          Github.set_pull_request_status(pull_request_id, {:status => 'pending', :description => 'Started work on pull request.'})
+          Github.set_pull_request_status(pull_request_id, {:status => 'pending', :context => 'ci', :description => 'Started work on pull request.'})
           job_id = Jenkins.start_job(pull_request_id)
           state  = Jenkins.wait_on_job(job_id)
           Github.set_pull_request_status(pull_request_id, state)
         end
 
         timeout = thr.join(config[:jenkins_job_timeout_seconds]).nil?
-        Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'Job timed out.'}) if timeout
+        Github.set_pull_request_status(pull_request_id, {:status => 'error', :context => 'ci', :description => 'Job timed out.'}) if timeout
       end
     rescue => e
-      Github.set_pull_request_status(pull_request_id, {:status => 'error', :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'})
+      Github.set_pull_request_status(pull_request_id, {:status => 'error', :context => 'ci', :description => 'An error has occurred. This pull request will be automatically rescheduled for testing.'})
       Logger.log('Error when testing pull request', e)
     end
   end
@@ -34,7 +34,7 @@ module Core
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
       if PullRequestsData.outdated_success_status?(pull_request)
-        Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been rescheduled for testing as the '#{pull_request[:base_branch]}' branch has been updated."})
+        Github.set_pull_request_status(pull_request[:id], {:status => 'success', :context => 'ci', :description => "This has been rescheduled for testing as the '#{pull_request[:base_branch]}' branch has been updated."})
       end
       PullRequestsData.update(pull_request)
     end
