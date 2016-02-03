@@ -9,7 +9,7 @@ module Core
       end
 
       if pull_request[:mergeable] == true
-        Jenkins.wait_for_idle_executor
+        Jenkins.wait_for_idle_executor if config.fetch(:jenkins_wait_for_idle_executor, true)
 
         thr = Thread.new do
           Github.set_pull_request_status(pull_request_id, {:status => 'pending', :description => 'Started work on pull request.'})
@@ -28,12 +28,13 @@ module Core
   end
 
   def Core.poll_pull_requests_and_queue_next_job
+    config       = ConfigFile.read
     open_pull_requests_ids = Github.get_open_pull_requests_ids
     PullRequestsData.remove_dead_pull_requests(open_pull_requests_ids)
 
     open_pull_requests_ids.each do |pull_request_id|
       pull_request = Github.get_pull_request(pull_request_id)
-      if PullRequestsData.outdated_success_status?(pull_request)
+      if PullRequestsData.outdated_success_status?(pull_request) && config.fetch(:github_watch_base_branch_update, true)
         Github.set_pull_request_status(pull_request[:id], {:status => 'success', :description => "This has been rescheduled for testing as the '#{pull_request[:base_branch]}' branch has been updated."})
       end
       PullRequestsData.update(pull_request)

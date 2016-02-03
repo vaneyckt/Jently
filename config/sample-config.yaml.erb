@@ -33,6 +33,9 @@
 # This makes sure we don't end up spamming GitHub's servers.
 :github_polling_interval_seconds: 60
 
+# By default Jently reschedules open pull request if base branch has been updated
+:github_watch_base_branch_update: true
+
 # If access to your Jenkins CI is restricted with a login and password,
 # you can enther these here. Otherwise you should comment out or delete these lines.
 :jenkins_login: jenkins_login
@@ -53,6 +56,9 @@
 # The interval between successive polling requests that Jently makes to Jenkins in
 # order to query the state of the test job.
 :jenkins_polling_interval_seconds: 60
+
+# Wait while jenkins job becomes idle
+:jenkins_wait_for_idle_executor: true
 
 # By default, Jently tests all pull requests.  If you only want Jently to test pull requests that
 # are to be merged into specific branches, uncomment the following, and specify these branches, one per line.

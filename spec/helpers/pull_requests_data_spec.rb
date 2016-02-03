@@ -260,6 +260,7 @@ describe PullRequestsData do
 
           before do
             PullRequestsData.write( id => stored_pr )
+            ConfigFile.stub(:read).and_return({})
           end
 
           it 'is true if the stored pr and specified pr have different a head sha' do
@@ -282,6 +283,7 @@ describe PullRequestsData do
 
           before do
             PullRequestsData.write( id => stored_pr )
+            ConfigFile.stub(:read).and_return({})
           end
 
           it 'is true if the stored pr and specified pr have different a head sha' do
@@ -294,6 +296,26 @@ describe PullRequestsData do
 
           it 'is false if the stored pr and specified pr have the same head and base sha' do
             PullRequestsData.test_required?( stored_pr ).should be_false
+          end
+        end
+
+        context 'when base sha has changed' do
+          let(:head_sha)  { 'abc123' }
+          let(:base_sha)  { 'def456' }
+          let(:stored_pr) { {:id => id, :merged => false, :status => 'success', :head_sha => head_sha, :base_sha => base_sha } }
+
+          before do
+            PullRequestsData.write( id => stored_pr )
+          end
+
+          it 'is true when github_watch_base_branch_update set to true' do
+            ConfigFile.stub(:read).and_return(:github_watch_base_branch_update => true)
+            PullRequestsData.test_required?( stored_pr.merge(:base_sha => 'othersha') ).should be_true
+          end
+
+          it 'is false when github_watch_base_branch_update set to false' do
+            ConfigFile.stub(:read).and_return(:github_watch_base_branch_update => false)
+            PullRequestsData.test_required?( stored_pr.merge(:base_sha => 'othersha') ).should be_false
           end
         end
       end
